@@ -1,13 +1,12 @@
 import aiohttp
-from aiohttp import web
 from pyrogram import Client, filters
 from pyrogram.types import Message
-import asyncio
 
 # ===== CONFIG =====
 API_ID = "7041911"  # your API_ID
 API_HASH = "abab2561c71e3004a55d4ff9763d5383"
 BOT_TOKEN = ""
+OWNER_ID = 123456789  # replace with your Telegram user ID
 
 # Cloudflare Worker endpoint
 WORKER_URL = "https://adda.botzs.workers.dev/?url="
@@ -20,7 +19,7 @@ client = Client(
     bot_token=BOT_TOKEN
 )
 
-# ===== KOYEB HEALTH CHECK (Telegram command) =====
+# ===== KOYEB HEALTH CHECK =====
 @client.on_message(filters.command("health"))
 async def health(_, message: Message):
     await message.reply_text("✅ Bot is Alive & Healthy on Koyeb!")
@@ -59,6 +58,7 @@ async def prime_scraper(_, message: Message):
 🖼 **Cover:** [Link]({landscape})
 """
 
+        # Send with poster if available
         if portrait:
             await message.reply_photo(photo=portrait, caption=caption)
         else:
@@ -67,27 +67,25 @@ async def prime_scraper(_, message: Message):
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`")
 
-# ===== KOYEB HEALTHCHECK SERVER =====
-async def handle(request):
-    return web.Response(text="✅ Alive")
+# ===== STARTUP MESSAGE =====
+@client.on_message(filters.command("start"))
+async def start(_, message: Message):
+    await message.reply_text("👋 Hello! Bot is Ready.\n\nUse `/prime <prime-link>` to fetch details.")
 
-async def start_web_server():
-    app = web.Application()
-    app.router.add_get("/", handle)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", 8080)
-    await site.start()
+async def startup_message():
+    try:
+        await client.send_message(OWNER_ID, "🚀 Bot is Ready and Running on Koyeb!")
+    except Exception as e:
+        print(f"Could not send startup message: {e}")
 
-# ===== START BOT + SERVER =====
+# ===== START BOT =====
+print("🚀 Bot Starting...")
+
 async def main():
-    # Start web server
-    asyncio.create_task(start_web_server())
-
-    # Start Pyrogram (this blocks until stopped)
     await client.start()
-    await client.stop()   # ensures clean exit when Koyeb stops the instance
+    await startup_message()
+    print("✅ Bot is fully started and waiting for commands...")
+    await client.idle()
 
-if __name__ == "__main__":
-    print("🚀 Bot Started...")
-    client.run()  # <-- this replaces asyncio.run(main())
+import asyncio
+asyncio.run(main())
