@@ -1,14 +1,15 @@
 import aiohttp
-from pyrogram import Client, filters
+from aiohttp import web
+from pyrogram import Client, filters, idle
 from pyrogram.types import Message
+import asyncio
 
 # ===== CONFIG =====
-API_ID = "7041911"  # your API_ID
+API_ID = "7041911"
 API_HASH = "abab2561c71e3004a55d4ff9763d5383"
 BOT_TOKEN = ""
-OWNER_ID = 123456789  # replace with your Telegram user ID
+OWNER_ID = "7637230253" # replace with your Telegram user id
 
-# Cloudflare Worker endpoint
 WORKER_URL = "https://adda.botzs.workers.dev/?url="
 
 # ===== BOT INSTANCE =====
@@ -19,12 +20,35 @@ client = Client(
     bot_token=BOT_TOKEN
 )
 
-# ===== KOYEB HEALTH CHECK =====
+# ===== HEALTH CHECK =====
+async def health_handler(request):
+    return web.Response(text="ok")
+
+async def start_webserver():
+    app = web.Application()
+    app.router.add_get("/", health_handler)  # Koyeb health ping
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", 8080)
+    await site.start()
+    print("🌐 Health check server running on port 8080")
+
+# ===== BOT COMMANDS =====
+@client.on_message(filters.command("start"))
+async def start_cmd(_, message: Message):
+    await message.reply_text(
+        f"👋 Hello {message.from_user.first_name}!\n\n"
+        "I am your **OTT Scraper Bot** 🎬\n\n"
+        "Commands:\n"
+        "✅ `/health` - Check bot status\n"
+        "✅ `/prime <url>` - Scrape Prime Video details\n\n"
+        "🚀 Running on Koyeb!"
+    )
+
 @client.on_message(filters.command("health"))
 async def health(_, message: Message):
     await message.reply_text("✅ Bot is Alive & Healthy on Koyeb!")
 
-# ===== PRIME VIDEO SCRAPER =====
 @client.on_message(filters.command("prime"))
 async def prime_scraper(_, message: Message):
     if len(message.command) < 2:
@@ -43,7 +67,7 @@ async def prime_scraper(_, message: Message):
 
                 data = await resp.json()
 
-        # Format message
+        # Format
         title = data.get("title", "N/A")
         year = data.get("year", "N/A")
         portrait = data.get("portrait")
@@ -58,7 +82,6 @@ async def prime_scraper(_, message: Message):
 🖼 **Cover:** [Link]({landscape})
 """
 
-        # Send with poster if available
         if portrait:
             await message.reply_photo(photo=portrait, caption=caption)
         else:
@@ -67,25 +90,19 @@ async def prime_scraper(_, message: Message):
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`")
 
-# ===== STARTUP MESSAGE =====
-@client.on_message(filters.command("start"))
-async def start(_, message: Message):
-    await message.reply_text("👋 Hello! Bot is Ready.\n\nUse `/prime <prime-link>` to fetch details.")
-
+# ===== STARTUP =====
 async def startup_message():
     try:
         await client.send_message(OWNER_ID, "🚀 Bot is Ready and Running on Koyeb!")
     except Exception as e:
         print(f"Could not send startup message: {e}")
 
-# ===== START BOT =====
-print("🚀 Bot Starting...")
-
 async def main():
     await client.start()
     await startup_message()
+    await start_webserver()
     print("✅ Bot is fully started and waiting for commands...")
-    await client.idle()
+    await idle()  # keep bot running
 
-import asyncio
+print("🚀 Bot Starting...")
 asyncio.run(main())
