@@ -1,6 +1,6 @@
 import aiohttp
 from aiohttp import web
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 import asyncio
 
@@ -88,8 +88,4 @@ async def main():
     await idle()  # Keeps Pyrogram alive
 
 if __name__ == "__main__":
-    import uvloop
-    from pyrogram import idle
-
-    uvloop.install()
     asyncio.run(main())
