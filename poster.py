@@ -7,7 +7,7 @@ import asyncio
 # ===== CONFIG =====
 API_ID = "7041911"  # your API_ID
 API_HASH = "abab2561c71e3004a55d4ff9763d5383"
-BOT_TOKEN = ""
+BOT_TOKEN = "8375088621:AAFveIhv0xojw5q3PIRP7hwim-lymnAlnGE"
 
 # Cloudflare Worker endpoint
 WORKER_URL = "https://adda.botzs.workers.dev/?url="
