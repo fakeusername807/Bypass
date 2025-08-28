@@ -7,7 +7,7 @@ import asyncio
 # ===== CONFIG =====
 API_ID = "7041911"  # your API_ID
 API_HASH = "abab2561c71e3004a55d4ff9763d5383"
-BOT_TOKEN = "8375088621:AAFveIhv0xojw5q3PIRP7hwim-lymnAlnGE"
+BOT_TOKEN = ""
 
 # Cloudflare Worker endpoint
 WORKER_URL = "https://adda.botzs.workers.dev/?url="
@@ -81,12 +81,13 @@ async def start_web_server():
 
 # ===== START BOT + SERVER =====
 async def main():
-    await asyncio.gather(
-        client.start(),
-        start_web_server()
-    )
-    await client.idle()
+    # Start web server
+    asyncio.create_task(start_web_server())
+
+    # Start Pyrogram (this blocks until stopped)
+    await client.start()
+    await client.stop()   # ensures clean exit when Koyeb stops the instance
 
 if __name__ == "__main__":
     print("🚀 Bot Started...")
-    asyncio.run(main())
+    client.run()  # <-- this replaces asyncio.run(main())
