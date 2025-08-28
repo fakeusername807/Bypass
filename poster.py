@@ -62,7 +62,7 @@ async def prime_cmd(client, message: Message):
         return await message.reply("🔗 Please provide a Prime OTT URL.\n\nExample:\n`/prime https://...`")
 
     ott_url = message.text.split(None, 1)[1].strip()
-    api_url = f"https://primevideo.pbx1bots.workers.dev/?url={ott_url}"
+    api_url = f"https://adda.botzs.workers.dev/?url={ott_url}"
     await handle_ott_command(message, api_url)
 #Don't Remove Credit @Hgbotz 
 # ===== RUN BOT =====
