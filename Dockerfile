@@ -1,6 +1,6 @@
 FROM python:3.12.7
 
-WORKDIR /poster
+WORKDIR /ott_scraper_bot
 
 COPY requirements.txt .
 
