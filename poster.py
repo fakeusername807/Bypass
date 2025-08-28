@@ -5,7 +5,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 # ===== CONFIG =====
 API_ID = "7041911"
 API_HASH = "abab2561c71e3004a55d4ff9763d5383"
-BOT_TOKEN = "8375088621:AAFveIhv0xojw5q3PIRP7hwim-lymnAlnGE"
+BOT_TOKEN = ""
 
 
 # ===== BOT INSTANCE =====
