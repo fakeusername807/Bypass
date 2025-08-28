@@ -1,6 +1,8 @@
 import aiohttp
+from aiohttp import web
 from pyrogram import Client, filters
 from pyrogram.types import Message
+import asyncio
 
 # ===== CONFIG =====
 API_ID = "7041911"  # your API_ID
@@ -18,7 +20,7 @@ client = Client(
     bot_token=BOT_TOKEN
 )
 
-# ===== KOYEB HEALTH CHECK =====
+# ===== KOYEB HEALTH CHECK (Telegram command) =====
 @client.on_message(filters.command("health"))
 async def health(_, message: Message):
     await message.reply_text("✅ Bot is Alive & Healthy on Koyeb!")
@@ -57,7 +59,6 @@ async def prime_scraper(_, message: Message):
 🖼 **Cover:** [Link]({landscape})
 """
 
-        # Send with poster if available
         if portrait:
             await message.reply_photo(photo=portrait, caption=caption)
         else:
@@ -66,6 +67,26 @@ async def prime_scraper(_, message: Message):
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`")
 
-# ===== START BOT =====
-print("🚀 Bot Started...")
-client.run()
+# ===== KOYEB HEALTHCHECK SERVER =====
+async def handle(request):
+    return web.Response(text="✅ Alive")
+
+async def start_web_server():
+    app = web.Application()
+    app.router.add_get("/", handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", 8080)
+    await site.start()
+
+# ===== START BOT + SERVER =====
+async def main():
+    await asyncio.gather(
+        client.start(),
+        start_web_server()
+    )
+    await client.idle()
+
+if __name__ == "__main__":
+    print("🚀 Bot Started...")
+    asyncio.run(main())
