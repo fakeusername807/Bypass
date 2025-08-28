@@ -34,22 +34,39 @@ async def handle_ott_command(message: Message, api_url: str):
             return await msg.edit_text("❌ Failed to fetch data from API.")
 
         title = data.get("title") or "No Title"
-        image_url = data.get("poster") or data.get("landscape")
+        year = data.get("year") or ""
+        portrait = data.get("portrait")
+        landscape = data.get("landscape")
 
-        if not title and not image_url:
-            return await msg.edit_text("⚠️ No title or poster found for this URL.")
+        # Build caption
+        caption = f"🎬 <b>{title}</b>"
+        if year:
+            caption += f" - ({year})"
+        caption += "\n\n⚡ Powered By <a href='https://t.me/hgbotz'>𝙷𝙶𝙱𝙾𝚃ᶻ 🦋</a>"
 
-        text = (
-            f"🎬 <b>{title}</b>\n\n"
-            f"🖼️ Poster: {image_url}\n\n"
-            "<b><blockquote>Powered By <a href='https://t.me/hgbotz'>𝙷𝙶𝙱𝙾𝚃ᶻ 🦋</a></blockquote></b>"
-        )
+        # Inline buttons
+        buttons = [
+            [InlineKeyboardButton("🖼️ Cover", url=landscape or portrait or "https://t.me/hgbotz")],
+            [InlineKeyboardButton("📱 Portrait", url=portrait or landscape or "https://t.me/hgbotz")],
+            [InlineKeyboardButton("😶‍🌫️ Updates", url="https://t.me/hgbotz")],
+        ]
 
-        await msg.edit_text(
-            text=text,
-            disable_web_page_preview=False,
-            reply_markup=update_button,
-        )
+        if landscape:
+            await msg.delete()
+            await message.reply_photo(
+                photo=landscape,
+                caption=caption,
+                reply_markup=InlineKeyboardMarkup(buttons),
+            )
+        elif portrait:
+            await msg.delete()
+            await message.reply_photo(
+                photo=portrait,
+                caption=caption,
+                reply_markup=InlineKeyboardMarkup(buttons),
+            )
+        else:
+            await msg.edit_text("⚠️ No poster image found.")
 
     except Exception as e:
         await msg.edit_text(f"❌ Error: {e}")
@@ -80,12 +97,11 @@ async def start_web_app():
 
 # ===== MAIN ENTRYPOINT =====
 async def main():
-    # Run bot and health check server together
     await asyncio.gather(
         client.start(),
         start_web_app()
     )
-    await idle()  # Keeps Pyrogram alive
+    await idle()
 
 if __name__ == "__main__":
     asyncio.run(main())
