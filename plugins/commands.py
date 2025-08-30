@@ -2,7 +2,6 @@ from configs import *
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
-import json
 
 # ===== BOT COMMANDS =====
 @Client.on_message(filters.command("start"))
@@ -13,7 +12,7 @@ async def start_cmd(_, message: Message):
         "Commands:\n"
         "✅ `/health` - Check bot status\n"
         "✅ `/prime <url>` - Scrape Prime Video details\n\n"
-        "🚀 Running successfully!"
+        "🚀 Running on Koyeb!"
     )
 
 
@@ -35,26 +34,16 @@ async def prime_scraper(_, message: Message):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(api_url) as resp:
-                raw_text = await resp.text()
-
-                # Debug logs (check Koyeb logs, not Telegram)
-                print("🔗 API CALLED:", api_url)
-                print("📡 STATUS:", resp.status)
-                print("📜 RAW RESPONSE:", raw_text[:500])  # print first 500 chars
-
                 if resp.status != 200:
-                    return await message.reply_text(f"❌ Error fetching from Worker API (status {resp.status})")
+                    return await message.reply_text("❌ Error fetching from Worker API")
 
-                try:
-                    data = json.loads(raw_text)
-                except json.JSONDecodeError:
-                    return await message.reply_text("⚠️ Worker did not return valid JSON.\n\nCheck logs for details.")
+                data = await resp.json()
 
-        # Extract details
+        # Extract details (correct keys)
         title = data.get("title", "N/A")
         year = data.get("year", "N/A")
         type_ = data.get("type", "N/A")
-        prime_poster = data.get("landscape")    # ✅ prime poster direct link
+        prime_poster = data.get("primePoster")   # ✅ direct link (not click here)
         portrait = data.get("portrait")
         landscape = data.get("landscape")
 
@@ -73,5 +62,4 @@ __Powered By ADDABOTZ🦋__
         await message.reply_text(caption, disable_web_page_preview=True)
 
     except Exception as e:
-        print("❌ ERROR:", str(e))  # Debug log
         await message.reply_text(f"⚠️ Error: `{e}`")
