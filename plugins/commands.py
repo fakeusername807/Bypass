@@ -29,7 +29,7 @@ async def prime_scraper(_, message: Message):
         )
 
     prime_url = message.command[1]
-    api_url = f"{WORKER_URL}/?url={prime_url}"   # ✅ FIXED
+    api_url = f"{WORKER_URL}/?url={prime_url}"
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -39,20 +39,21 @@ async def prime_scraper(_, message: Message):
 
                 data = await resp.json()
 
-        # Extract details (correct keys)
+        # Extract details
         title = data.get("title", "N/A")
         year = data.get("year", "N/A")
         type_ = data.get("type", "N/A")
-        prime_poster = data.get("primePoster")   # ✅ direct link (not click here)
+        prime_poster = data.get("primePoster")   # direct link (first)
         portrait = data.get("portrait")
         landscape = data.get("landscape")
 
         # === FORMAT CLEAN OUTPUT ===
         caption = f"""
+🖼️ **Prime Poster :** {prime_poster or "N/A"}
+
 🎬 **{title}** ({year})
 📺 Type: {type_.title()}
 
-🖼️ **Prime Poster :** {prime_poster or "N/A"}
 🖼️ **Landscape :** {f"[Click Here]({landscape})" if landscape else "N/A"}
 🖼️ **Portrait :** {f"[Click Here]({portrait})" if portrait else "N/A"}
 
