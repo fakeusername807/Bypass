@@ -10,40 +10,48 @@ WORKER_URL = "https://gdflix.botzs.workers.dev/?url="
 async def gd_scraper(_, message: Message):
     if len(message.command) == 1:
         return await message.reply_text(
-            "⚠️ Usage: `/gd <gdlink>`",
+            "⚠️ Usage: `/gd <gdlink1> <gdlink2> ... (upto 5)`",
             disable_web_page_preview=True
         )
 
-    link = message.command[1]
-    if not link.startswith("http"):
-        return await message.reply_text("⚠️ Please send a valid GDLink URL")
+    links = message.command[1:]  # all links after command
+    if len(links) > 5:
+        return await message.reply_text("⚠️ You can only send up to 5 links at once!")
+
+    final_output = ""
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(WORKER_URL + link) as resp:
-                if resp.status != 200:
-                    return await message.reply_text("❌ Error fetching from Worker API")
-                data = await resp.json()
+            for idx, link in enumerate(links, start=1):
+                if not link.startswith("http"):
+                    final_output += f"\n❌ Link {idx} is invalid: {link}\n"
+                    continue
 
-        title = data.get("title", "Unknown Title")
-        size = data.get("size", "Unknown Size")
-        links = data.get("links", {})
+                async with session.get(WORKER_URL + link) as resp:
+                    if resp.status != 200:
+                        final_output += f"\n❌ Error fetching Link {idx}: {link}\n"
+                        continue
+                    data = await resp.json()
 
-        text = f"""
-📁 𝚃𝚒𝚝𝚕𝚎
+                title = data.get("title", "Unknown Title")
+                size = data.get("size", "Unknown Size")
+                links_data = data.get("links", {})
+
+                final_output += f"""
+📁 𝚃𝚒𝚝𝚕𝚎 {idx}
 {title}
 📦 𝚂𝚒𝚣𝚎 :- {size}
 
-⚡ INSTANT DL : [Click Here]({links.get('instantdl','')})
-☁️ CLOUD DOWNLOAD : [Click Here]({links.get('clouddl','')})
-📩 TELEGRAM FILE : [Click Here]({links.get('telegram','')})
-🗂 GOFILE : [Click Here]({links.get('gofile','')})
+⚡ INSTANT DL : [Click Here]({links_data.get('instantdl','')})
+☁️ CLOUD DOWNLOAD : [Click Here]({links_data.get('clouddl','')})
+📩 TELEGRAM FILE : [Click Here]({links_data.get('telegram','')})
+🗂 GOFILE : [Click Here]({links_data.get('gofile','')})
 
 ━━━━━━━━━━━━━━━━━━
-⚡ Powered By @AddaFiles 🚀
 """
 
-        await message.reply_text(text, disable_web_page_preview=True)
+        final_output += "\n⚡ Powered By @AddaFiles 🚀"
+        await message.reply_text(final_output, disable_web_page_preview=True)
 
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`")
