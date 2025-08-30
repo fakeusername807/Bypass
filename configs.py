@@ -7,3 +7,6 @@ API_ID = genv("API_ID", "")
 API_HASH = genv("API_HASH", "")
 
 BOT_TOKEN = genv("BOT_TOKEN", "")
+
+WORKER_URL = "https://adda.botzs.workers.dev/?url="
+
