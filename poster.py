@@ -7,12 +7,17 @@ import asyncio
 import pyrogram
 
 # ===== BOT INSTANCE =====
-client = Client(
-    "ott_scraper_bot",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    bot_token=BOT_TOKEN
-)
+class ShortnerBot(Client):
+    def __init__(self):
+        super().__init__(
+            "Scrapper",
+            api_id=API_ID,
+            api_hash=API_HASH,
+            bot_token=BOT_TOKEN,
+            plugins=dict(root="plugins"),
+            workers=100,
+        )
+
 
 # ===== HEALTH CHECK =====
 async def health_handler(request):
@@ -84,19 +89,6 @@ async def prime_scraper(_, message: Message):
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`")
 
-# ===== STARTUP =====
-async def startup_message():
-    try:
-        await client.send_message(OWNER_ID, "🚀 Bot is Ready and Running on Koyeb!")
-    except Exception as e:
-        print(f"Could not send startup message: {e}")
 
-async def main():
-    await client.start()
-    await startup_message()
-    await start_webserver()
-    print("✅ Bot is fully started and waiting for commands...")
-    await idle()  # keep bot running
-
-print("🚀 Bot Starting...")
-asyncio.run(main())
+if __name__ == "__main__":
+    ShortnerBot().run()
