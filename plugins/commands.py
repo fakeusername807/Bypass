@@ -1,3 +1,6 @@
+from configs import *
+from pyrogram import Client, filters
+
 # ===== BOT COMMANDS =====
 @client.on_message(filters.command("start"))
 async def start_cmd(_, message: Message):
