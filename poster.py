@@ -1,8 +1,10 @@
 import aiohttp
 from aiohttp import web
+from configs import *
 from pyrogram import Client, filters, idle
 from pyrogram.types import Message
 import asyncio
+import pyrogram
 
 # ===== BOT INSTANCE =====
 client = Client(
