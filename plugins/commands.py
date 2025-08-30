@@ -43,7 +43,7 @@ async def prime_scraper(_, message: Message):
         title = data.get("title", "N/A")
         year = data.get("year", "N/A")
         type_ = data.get("type", "N/A")
-        primevideo Poster = data.get("landscape")
+        prime_poster = data.get("landscape")    # ✅ prime poster direct link
         portrait = data.get("portrait")
         landscape = data.get("landscape")
 
@@ -52,7 +52,7 @@ async def prime_scraper(_, message: Message):
 🎬 **{title}** ({year})
 📺 Type: {type_.title()}
 
-🖼️ **Primevideo Poster:** {primePoster or "N/A"}
+🖼️ **Prime Poster :** {prime_poster or "N/A"}
 🖼️ **Landscape :** {f"[Click Here]({landscape})" if landscape else "N/A"}
 🖼️ **Portrait :** {f"[Click Here]({portrait})" if portrait else "N/A"}
 
