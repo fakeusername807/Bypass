@@ -4,8 +4,7 @@ import aiohttp
 
 WORKER_URL = "https://hub.botzs.workers.dev/"
 
-# Do NOT create a new client! Use the client passed to handlers.
-@filters.private & filters.command("hub")
+# Use the client passed by the main script (do NOT create a new Client)
 async def hubcloud_handler(client, message: Message):
     args = message.text.split()
     if len(args) < 2:
@@ -20,7 +19,7 @@ async def hubcloud_handler(client, message: Message):
             params = {"url": hubcloud_url}
             async with session.get(WORKER_URL, params=params, timeout=20) as resp:
                 data = await resp.json()
-        
+
         pixeldrain_link = data.get("pixeldrain")
         if pixeldrain_link:
             await message.reply_text(f"✅ Pixeldrain link:\n{pixeldrain_link}")
@@ -28,3 +27,11 @@ async def hubcloud_handler(client, message: Message):
             await message.reply_text("❌ Pixeldrain link not found.")
     except Exception as e:
         await message.reply_text(f"⚠️ Error: {e}")
+
+
+# Register the handler using the plugin system
+def register(client):
+    client.add_handler(
+        filters.command("hub") & filters.private,
+        hubcloud_handler
+    )
