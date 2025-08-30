@@ -1,8 +1,10 @@
 from configs import *
 from pyrogram import Client, filters
+from pyrogram.types import Message
+import aiohttp
 
 # ===== BOT COMMANDS =====
-@client.on_message(filters.command("start"))
+@Client.on_message(filters.command("start"))
 async def start_cmd(_, message: Message):
     await message.reply_text(
         f"👋 Hello {message.from_user.first_name}!\n\n"
@@ -13,11 +15,13 @@ async def start_cmd(_, message: Message):
         "🚀 Running on Koyeb!"
     )
 
-@client.on_message(filters.command("health"))
+
+@Client.on_message(filters.command("health"))
 async def health(_, message: Message):
     await message.reply_text("✅ Bot is Alive & Healthy on Koyeb!")
 
-@client.on_message(filters.command("prime"))
+
+@Client.on_message(filters.command("prime"))
 async def prime_scraper(_, message: Message):
     if len(message.command) < 2:
         return await message.reply_text(
