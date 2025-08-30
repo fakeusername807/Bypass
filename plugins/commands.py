@@ -3,12 +3,35 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
 
-# ===== BOT COMMANDS =====
+# ===== START COMMAND =====
+@Client.on_message(filters.command("start"))
+async def start_cmd(_, message: Message):
+    await message.reply_text(
+        f"👋 Hello {message.from_user.first_name}!\n\n"
+        "I am your **OTT Scraper Bot** 🎬\n\n"
+        "Commands:\n"
+        "✅ `/health` - Check bot status\n"
+        "✅ `/prime <url>` - Scrape Prime Video details\n\n"
+        "👉 Example:\n`/prime https://www.primevideo.com/detail/...`\n\n"
+        "🚀 Running on successfully 😂!"
+    )
+
+
+# ===== HEALTH COMMAND =====
+@Client.on_message(filters.command("health"))
+async def health(_, message: Message):
+    await message.reply_text("✅ Bot is Alive & Healthy on Koyeb!")
+
+
+# ===== PRIME SCRAPER =====
 @Client.on_message(filters.command("prime"))
 async def prime_scraper(_, message: Message):
-    if len(message.command) < 2:
+    # If no URL is given after /prime
+    if len(message.command) == 1:
         return await message.reply_text(
-            "⚠️ Please provide a Prime Video URL.\n\nExample:\n`/prime <prime-link>`"
+            "⚠️ Please provide a Prime Video URL.\n\n"
+            "👉 Example:\n`/prime https://www.primevideo.com/detail/...`",
+            disable_web_page_preview=True
         )
 
     prime_url = message.command[1]
@@ -43,6 +66,7 @@ async def prime_scraper(_, message: Message):
 __Powered By ADDABOTZ🦋__
 """
 
+        # Send with preview enabled (poster will show if link works)
         await message.reply_text(caption, disable_web_page_preview=False)
 
     except Exception as e:
