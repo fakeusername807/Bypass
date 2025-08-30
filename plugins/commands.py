@@ -39,21 +39,21 @@ async def prime_scraper(_, message: Message):
 
                 data = await resp.json()
 
-        # Format
+        # Extract details
         title = data.get("title", "N/A")
         year = data.get("year", "N/A")
         portrait = data.get("portrait")
         landscape = data.get("landscape")
         type_ = data.get("type", "N/A")
 
-        caption = f"""
-🎬 **{title}** ({year})
-📺 Type: {type_.title()}
+        # Build safe caption (no empty markdown links)
+        caption = f"🎬 **{title}** ({year})\n📺 Type: {type_.title()}\n\n"
+        if portrait:
+            caption += f"🖼 **Poster:** [Link]({portrait})\n"
+        if landscape:
+            caption += f"🖼 **Cover:** [Link]({landscape})\n"
 
-🖼 **Poster:** [Link]({portrait})
-🖼 **Cover:** [Link]({landscape})
-"""
-
+        # Send photo if poster available, else send only text
         if portrait:
             await message.reply_photo(photo=portrait, caption=caption)
         else:
