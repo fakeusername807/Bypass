@@ -60,7 +60,11 @@ async def prime_scraper(_, message: Message):
 __Powered By ADDABOTZ🦋__
 """
 
-        await message.reply_text(caption, disable_web_page_preview=True)
+        # Send with photo if poster exists
+        if prime_poster:
+            await message.reply_photo(photo=prime_poster, caption=caption)
+        else:
+            await message.reply_text(caption, disable_web_page_preview=True)
 
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`")
