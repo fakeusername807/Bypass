@@ -29,7 +29,7 @@ async def prime_scraper(_, message: Message):
         )
 
     prime_url = message.command[1]
-    api_url = WORKER_URL + prime_url
+    api_url = f"{WORKER_URL}/?url={prime_url}"   # ✅ FIXED
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -43,19 +43,23 @@ async def prime_scraper(_, message: Message):
         title = data.get("title", "N/A")
         year = data.get("year", "N/A")
         type_ = data.get("type", "N/A")
+        primevideo Poster = data.get("landscape")
         portrait = data.get("portrait")
         landscape = data.get("landscape")
 
-        # Plain text only (no photo sending)
+        # === FORMAT CLEAN OUTPUT ===
         caption = f"""
 🎬 **{title}** ({year})
 📺 Type: {type_.title()}
 
-🖼 Poster: {portrait or "N/A"}
-🖼 Cover: {landscape or "N/A"}
+🖼️ **Primevideo Poster:** {primePoster or "N/A"}
+🖼️ **Landscape :** {f"[Click Here]({landscape})" if landscape else "N/A"}
+🖼️ **Portrait :** {f"[Click Here]({portrait})" if portrait else "N/A"}
+
+__Powered By ADDABOTZ🦋__
 """
 
-        await message.reply_text(caption)
+        await message.reply_text(caption, disable_web_page_preview=True)
 
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`")
