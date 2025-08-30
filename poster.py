@@ -4,14 +4,6 @@ from pyrogram import Client, filters, idle
 from pyrogram.types import Message
 import asyncio
 
-# ===== CONFIG =====
-API_ID = "7041911"
-API_HASH = "abab2561c71e3004a55d4ff9763d5383"
-BOT_TOKEN = ""
-OWNER_ID = "7637230253" # replace with your Telegram user id
-
-WORKER_URL = "https://adda.botzs.workers.dev/?url="
-
 # ===== BOT INSTANCE =====
 client = Client(
     "ott_scraper_bot",
