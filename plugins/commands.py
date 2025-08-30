@@ -12,7 +12,7 @@ async def start_cmd(_, message: Message):
         "Commands:\n"
         "✅ `/health` - Check bot status\n"
         "✅ `/prime <url>` - Scrape Prime Video details\n\n"
-        "🚀 Running on Koyeb!"
+        "🚀 Running successfully!"
     )
 
 
