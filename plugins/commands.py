@@ -20,7 +20,7 @@ async def start_cmd(_, message: Message):
 # ===== HEALTH COMMAND =====
 @Client.on_message(filters.command("health"))
 async def health(_, message: Message):
-    await message.reply_text("✅ Bot is Alive & Healthy on Koyeb!")
+    await message.reply_text("✅ Bot is Alive & Healthy on SERVER 😂!")
 
 
 # ===== PRIME SCRAPER =====
