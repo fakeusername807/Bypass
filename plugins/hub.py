@@ -1,11 +1,12 @@
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import Message
 import aiohttp
 
 WORKER_URL = "https://hub.botzs.workers.dev/"
 
-@client.on_message(filters.command("hub") & filters.private)
-async def hubcloud_handler(client_obj: Client, message: Message):
+# Do NOT create a new client! Use the client passed to handlers.
+@filters.private & filters.command("hub")
+async def hubcloud_handler(client, message: Message):
     args = message.text.split()
     if len(args) < 2:
         await message.reply_text("Usage: /hub <Hubcloud URL>")
