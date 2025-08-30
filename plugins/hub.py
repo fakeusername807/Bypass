@@ -1,12 +1,10 @@
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
 
 WORKER_URL = "https://hub.botzs.workers.dev/"
 
-# This will be automatically registered by your main Client
-@filters.command("hub") & filters.private
-async def hubcloud_handler(client, message: Message):
+async def hubcloud_handler(client: Client, message: Message):
     args = message.text.split()
     if len(args) < 2:
         await message.reply_text("Usage: /hub <Hubcloud URL>")
@@ -28,3 +26,10 @@ async def hubcloud_handler(client, message: Message):
             await message.reply_text("❌ Pixeldrain link not found.")
     except Exception as e:
         await message.reply_text(f"⚠️ Error: {e}")
+
+# This function will be called by your main bot to register the plugin
+def register(client: Client):
+    client.add_handler(
+        filters.command("hub") & filters.private,
+        hubcloud_handler
+    )
