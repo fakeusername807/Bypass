@@ -1,10 +1,13 @@
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
+from configs import *
 
 WORKER_URL = "https://hub.botzs.workers.dev/"
 
-# Use the client passed by the main script (do NOT create a new Client)
+client = Client("hub_bot", bot_token=BOT_TOKEN)
+
+@client.on_message(filters.command("hub") & filters.private)
 async def hubcloud_handler(client, message: Message):
     args = message.text.split()
     if len(args) < 2:
@@ -28,10 +31,4 @@ async def hubcloud_handler(client, message: Message):
     except Exception as e:
         await message.reply_text(f"⚠️ Error: {e}")
 
-
-# Register the handler using the plugin system
-def register(client):
-    client.add_handler(
-        filters.command("hub") & filters.private,
-        hubcloud_handler
-    )
+client.run()
