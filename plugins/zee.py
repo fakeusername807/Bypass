@@ -30,15 +30,17 @@ async def zee5_poster(client: Client, message: Message):
             await message.reply_text(f"No poster found for {movie_name}.")
             return
 
+        # HTML link to open poster in web view
         text = f"Zee Poster: {landscape[0]}\n\n" \
                f"🌄 Landscape:\n" \
-               f"1. Click Here\n\n" \
+               f'1. <a href="{landscape[0]}">Click Here</a>\n\n' \
                f"🎬 {movie_name}\n\n" \
                f"Powered By AddaFiles"
 
         await message.reply_text(
             text,
-            disable_web_page_preview=False
+            disable_web_page_preview=False,  # <-- ensures web preview opens
+            parse_mode="html"                 # <-- HTML formatting
         )
 
     except Exception as e:
