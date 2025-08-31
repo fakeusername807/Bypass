@@ -1,5 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
+from pyrogram.enums import ParseMode  # <-- import this
 import aiohttp
 
 WORKER_URL = "https://zee.botzs.workers.dev/"
@@ -41,7 +42,7 @@ async def zee5_poster(client: Client, message: Message):
             chat_id=message.chat.id,
             photo=landscape[0],
             caption=text,
-            parse_mode="html"
+            parse_mode=ParseMode.HTML  # <-- fixed here
         )
 
     except Exception as e:
