@@ -8,7 +8,9 @@ WORKER_URL = "https://hub.botzs.workers.dev/"
 @Client.on_message(filters.command(["hub", "hubcloud"]) & filters.private)
 async def hubcloud_handler(client: Client, message: Message):
     if len(message.command) < 2:
-        await message.reply_text("❌ Usage:\n`/hub <hubcloud_url>`\nor\n`/hubcloud <hubcloud_url>`")
+        await message.reply_text(
+            "❌ Usage:\n`/hub <hubcloud_url>`\nor\n`/hubcloud <hubcloud_url>`"
+        )
         return
 
     hubcloud_url = message.command[1].strip()
@@ -26,4 +28,4 @@ async def hubcloud_handler(client: Client, message: Message):
         else:
             await message.reply_text("❌ Pixeldrain link not found in response.")
     except Exception as e:
-        await message.reply_text(f"⚠️ Error:\n`{e}`")r
+        await message.reply_text(f"⚠️ Error:\n`{e}`")
