@@ -60,6 +60,6 @@ async def fetch_images(client, message):
         for i, img in enumerate(posters[:6], 1):
             msg += f"{i}. [Click Here]({IMG_BASE}{img['file_path']})\n"
 
-    msg += "\n⚡ Powered By TMDb"
+    msg += "\n⚡ Powered By @AddaFiles"
 
     await message.reply_text(msg, disable_web_page_preview=True)
