@@ -5,7 +5,7 @@ import aiohttp
 # Your Cloudflare Worker API
 WORKER_URL = "https://hub.botzs.workers.dev/"
 
-@Client.on_message(filters.command(["hub", "hubcloud"]) & filters.private)
+@Client.on_message(filters.command(["hub", "hubcloud"]))
 async def hubcloud_handler(client: Client, message: Message):
     if len(message.command) < 2:
         await message.reply_text(
