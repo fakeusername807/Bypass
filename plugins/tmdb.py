@@ -46,20 +46,24 @@ async def fetch_images(client, message):
     if backdrops:
         msg += "🖼 **Landscape Posters:**\n"
         for i, img in enumerate(backdrops[:6], 1):
-            msg += f"{i}. [Click Here]({IMG_BASE}{img['file_path']})\n"
+            link = f"{IMG_BASE}{img['file_path']}"
+            msg += f"{i}. [Click Here]({link})\n"
 
     # Logos
     if logos:
         msg += "\n🔖 **Logos:**\n"
         for i, img in enumerate(logos[:6], 1):
-            msg += f"{i}. [Click Here]({IMG_BASE}{img['file_path']})\n"
+            link = f"{IMG_BASE}{img['file_path']}"
+            msg += f"{i}. [Click Here]({link})\n"
 
     # Portrait Posters
     if posters:
         msg += "\n📌 **Portrait Posters:**\n"
         for i, img in enumerate(posters[:6], 1):
-            msg += f"{i}. [Click Here]({IMG_BASE}{img['file_path']})\n"
+            link = f"{IMG_BASE}{img['file_path']}"
+            msg += f"{i}. [Click Here]({link})\n"
 
     msg += "\n⚡ Powered By @AddaFiles"
 
-    await message.reply_text(msg, disable_web_page_preview=True)
+    # ✅ enable preview
+    await message.reply_text(msg, disable_web_page_preview=False)
