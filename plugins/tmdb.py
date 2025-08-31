@@ -1,5 +1,6 @@
 from pyrogram import Client, filters
 import requests
+from datetime import datetime  # ✅ for sorting by release date
 
 API_KEY = "cc852a292bf192a833fd6cc5472e177b"
 TMDB_API = "https://api.themoviedb.org/3"
@@ -26,10 +27,22 @@ async def fetch_images(client, message):
 
     # 🔍 Search Movie
     res = requests.get(f"{TMDB_API}/search/movie", params=params).json()
-    if not res.get("results"):
+    results = res.get("results", [])
+
+    if not results:
         return await message.reply_text(f"No movie found for `{query}`")
 
-    movie = res["results"][0]
+    # ✅ Sort by release date (newest first)
+    def parse_date(d):
+        try:
+            return datetime.strptime(d, "%Y-%m-%d")
+        except:
+            return datetime.min
+
+    results.sort(key=lambda x: parse_date(x.get("release_date", "")), reverse=True)
+
+    # pick newest movie
+    movie = results[0]
     movie_id = movie["id"]
     title = movie["title"]
     release_year = movie.get("release_date", "N/A")[:4]
