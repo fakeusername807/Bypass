@@ -5,7 +5,8 @@ API_KEY = "cc852a292bf192a833fd6cc5472e177b"
 TMDB_API = "https://api.themoviedb.org/3"
 IMG_BASE = "https://image.tmdb.org/t/p/original"
 
-@Client.on_message(filters.command(["p", "poster"]) & filters.private)
+# ✅ Works in both groups + private
+@Client.on_message(filters.command(["p", "poster"]))
 async def fetch_images(client, message):
     if len(message.command) < 2:
         await message.reply_text("Usage: `/poster Movie Name 2025`", quote=True)
@@ -14,7 +15,7 @@ async def fetch_images(client, message):
     query = " ".join(message.command[1:])
     year = None
 
-    # detect if last word is year
+    # detect if last word is year (e.g., /p Inception 2010)
     parts = query.rsplit(" ", 1)
     if len(parts) == 2 and parts[1].isdigit() and len(parts[1]) == 4:
         query, year = parts[0], parts[1]
@@ -23,7 +24,7 @@ async def fetch_images(client, message):
     if year:
         params["year"] = year
 
-    # Search Movie
+    # 🔍 Search Movie
     res = requests.get(f"{TMDB_API}/search/movie", params=params).json()
     if not res.get("results"):
         return await message.reply_text(f"No movie found for `{query}`")
@@ -33,7 +34,7 @@ async def fetch_images(client, message):
     title = movie["title"]
     release_year = movie.get("release_date", "N/A")[:4]
 
-    # Get Images
+    # 🎞 Get Images
     img_res = requests.get(f"{TMDB_API}/movie/{movie_id}/images", params={"api_key": API_KEY}).json()
 
     backdrops = img_res.get("backdrops", [])
@@ -42,21 +43,21 @@ async def fetch_images(client, message):
 
     msg = f"🎬 **{title} ({release_year})**\n\n"
 
-    # Landscape
+    # 🖼 Landscape
     if backdrops:
         msg += "🖼 **Landscape Posters:**\n"
         for i, img in enumerate(backdrops[:6], 1):
             link = f"{IMG_BASE}{img['file_path']}"
             msg += f"{i}. [Click Here]({link})\n"
 
-    # Logos
+    # 🔖 Logos
     if logos:
         msg += "\n🔖 **Logos:**\n"
         for i, img in enumerate(logos[:6], 1):
             link = f"{IMG_BASE}{img['file_path']}"
             msg += f"{i}. [Click Here]({link})\n"
 
-    # Portrait Posters
+    # 📌 Portrait Posters
     if posters:
         msg += "\n📌 **Portrait Posters:**\n"
         for i, img in enumerate(posters[:6], 1):
@@ -65,5 +66,5 @@ async def fetch_images(client, message):
 
     msg += "\n⚡ Powered By @AddaFiles"
 
-    # ✅ enable preview
+    # ✅ Enable web preview like screenshot
     await message.reply_text(msg, disable_web_page_preview=False)
