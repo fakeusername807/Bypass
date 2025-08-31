@@ -1,6 +1,5 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from pyrogram.enums import ParseMode
 import aiohttp
 
 WORKER_URL = "https://zee.botzs.workers.dev/"
@@ -31,16 +30,18 @@ async def zee5_poster(client: Client, message: Message):
             await message.reply_text(f"No poster found for {movie_name}.")
             return
 
-        text = f"Zee Poster: {landscape[0]}\n\n" \
-               f"🌄 Landscape:\n" \
+        # Prepare text with clickable link for landscape
+        text = f"🌄 <b>Landscape Poster:</b>\n" \
                f'1. <a href="{landscape[0]}">Click Here</a>\n\n' \
-               f"🎬 {movie_name}\n\n" \
+               f"🎬 <b>{movie_name}</b>\n\n" \
                f"Powered By AddaFiles"
 
-        await message.reply_text(
-            text,
-            disable_web_page_preview=False,
-            parse_mode=ParseMode.HTML   # <-- fixed here
+        # Send the first landscape image as actual photo with caption
+        await client.send_photo(
+            chat_id=message.chat.id,
+            photo=landscape[0],
+            caption=text,
+            parse_mode="html"
         )
 
     except Exception as e:
