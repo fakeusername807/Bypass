@@ -1,4 +1,5 @@
 from pyrogram import Client, filters
+from pyrogram.handlers import MessageHandler
 from pyrogram.types import Message
 import aiohttp
 
@@ -27,9 +28,8 @@ async def hubcloud_handler(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"⚠️ Error: {e}")
 
-# This function will be called by your main bot to register the plugin
+# Register function
 def register(client: Client):
     client.add_handler(
-        filters.command("hub") & filters.private,
-        hubcloud_handler
+        MessageHandler(hubcloud_handler, filters.command("hub") & filters.private)
     )
