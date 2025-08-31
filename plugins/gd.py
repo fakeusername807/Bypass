@@ -46,6 +46,7 @@ async def gd_scraper(_, message: Message):
 ☁️ CLOUD DOWNLOAD : [Click Here]({links_data.get('clouddl','')})
 📩 TELEGRAM FILE : [Click Here]({links_data.get('telegram','')})
 🗂 GOFILE : [Click Here]({links_data.get('gofile','')})
+📥 PIXELDRAIN : [Click Here]({links_data.get('pixeldrain','')})
 
 ━━━━━━━━━━━━━━━━━━
 """
