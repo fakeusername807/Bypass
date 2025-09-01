@@ -1,25 +1,35 @@
+# plugins/auth_handler.py
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import OWNER_ID, groups_col  # import from config
+from config import OWNER_ID, groups_col  # import OWNER_ID and MongoDB collection from config
 
-# ✅ Cache for quick checks
+# ✅ In-memory cache for authorized groups
 authorized_groups = set()
 
 
 def load_groups():
-    """Load authorized groups into memory"""
+    """Load authorized groups from MongoDB into memory"""
     global authorized_groups
-    authorized_groups = {g["chat_id"] for g in groups_col.find()}
+    try:
+        authorized_groups = {g["chat_id"] for g in groups_col.find()}
+        print(f"✅ Loaded {len(authorized_groups)} authorized groups from MongoDB")
+    except Exception as e:
+        print(f"❌ Failed to load authorized groups: {e}")
+        authorized_groups = set()
 
 
 def add_group(chat_id: int):
-    """Add a group to MongoDB + cache"""
-    groups_col.update_one(
-        {"chat_id": chat_id},
-        {"$set": {"chat_id": chat_id}},
-        upsert=True
-    )
-    authorized_groups.add(chat_id)
+    """Add a group to MongoDB and cache"""
+    try:
+        groups_col.update_one(
+            {"chat_id": chat_id},
+            {"$set": {"chat_id": chat_id}},
+            upsert=True
+        )
+        authorized_groups.add(chat_id)
+        print(f"✅ Added group {chat_id} to authorized groups")
+    except Exception as e:
+        print(f"❌ Failed to add group {chat_id}: {e}")
 
 
 # ✅ Command: /auth or /authorize (Owner only)
@@ -49,8 +59,8 @@ async def check_group_auth(client: Client, message: Message):
             "🚫 This group is not authorized to use the bot.\n"
             "Only the owner can authorize with /auth"
         )
-    # ⚡ If group is authorized → other command handlers will work
+    # ⚡ If authorized → other command handlers will work normally
 
 
-# ✅ Load groups at startup
+# ✅ Load groups from MongoDB at startup
 load_groups()
