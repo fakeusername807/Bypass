@@ -7,10 +7,12 @@ WORKER_URL = "https://hub.botzs.workers.dev/"
 
 @Client.on_message(filters.command(["hub", "hubcloud"]))
 async def hubcloud_handler(client: Client, message: Message):
+    # ------------------ Authorization Check ------------------
     OFFICIAL_GROUPS = ["-1002311378229"]  # replace with your group IDs
     if str(message.chat.id) not in OFFICIAL_GROUPS:
         await message.reply("❌ This command only works in our official group.")
         return
+    # ---------------------------------------------------------
 
     if len(message.command) < 2:
         await message.reply_text(
@@ -18,6 +20,7 @@ async def hubcloud_handler(client: Client, message: Message):
         )
         return
 
+    # Collect all links after the command (space, comma, newline separated)
     raw_links = " ".join(message.command[1:])
     hubcloud_urls = [u.strip() for u in raw_links.replace("\n", " ").replace(",", " ").split() if u.strip()]
 
@@ -46,6 +49,7 @@ async def hubcloud_handler(client: Client, message: Message):
                 text += f"🟢 Pixeldrain\n🔗 [Download Link]({f['pixeldrain']})\n\n"
             if f.get("fsl"):
                 text += f"🔵 FSL\n🔗 [Download Link]({f['fsl']})\n\n"
+            # ✅ Added 10GBs support
             if f.get("10gbs"):
                 text += f"🟣 10GBs\n🔗 [Download Link]({f['10gbs']})\n\n"
 
