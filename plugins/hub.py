@@ -5,7 +5,7 @@ import aiohttp
 # Your Cloudflare Worker API
 WORKER_URL = "https://hub.botzs.workers.dev/"
 
-# ===== HubCloud / Pixeldrain COMMAND =====
+# ===== HubCloud / Pixeldrain / FSL / 10GBs COMMAND =====
 @Client.on_message(filters.command(["hub", "hubcloud"]))
 async def hubcloud_handler(client: Client, message: Message):
     # ------------------ Authorization Check ------------------
@@ -23,7 +23,7 @@ async def hubcloud_handler(client: Client, message: Message):
         return
 
     hubcloud_url = message.command[1].strip()
-    wait_msg = await message.reply_text("🔍 Fetching Pixeldrain links...")
+    wait_msg = await message.reply_text("🔍 Fetching links...")
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -34,18 +34,19 @@ async def hubcloud_handler(client: Client, message: Message):
         files = data.get("files", [])
 
         if not files:
-            await wait_msg.edit_text("❌ No Pixeldrain links found in response.")
+            await wait_msg.edit_text("❌ No links found in response.")
             return
 
-        # Format and send each file info
-        text = "✅ **Pixeldrain Results:**\n\n"
+        # Format and send each file info separately
+        final_text = "✅ **HubCloud Extracted Links:**\n\n"
         for f in files:
             name = f.get("name", "Unknown File")
             size = f.get("size", "Unknown Size")
             link = f.get("link", "")
-            text += f"🎬 **{name}**\n💾 `{size}`\n🔗 [Download Link]({link})\n\n"
 
-        await wait_msg.edit_text(text, disable_web_page_preview=True)
+            final_text += f"🎬 **{name}**\n💾 `{size}`\n🔗 [Download Link]({link})\n\n"
+
+        await wait_msg.edit_text(final_text, disable_web_page_preview=True)
 
     except Exception as e:
         await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
