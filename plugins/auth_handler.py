@@ -1,4 +1,3 @@
-# plugins/auth_handler.py
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from config import OWNER_ID, groups_col  # import OWNER_ID and MongoDB collection from config
