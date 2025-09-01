@@ -6,9 +6,17 @@ API_KEY = "cc852a292bf192a833fd6cc5472e177b"
 TMDB_API = "https://api.themoviedb.org/3"
 IMG_BASE = "https://image.tmdb.org/t/p/original"
 
-# ✅ Works in both groups + private
+# ===== TMDB POSTER COMMAND =====
 @Client.on_message(filters.command(["p", "poster"]))
 async def fetch_images(client, message):
+    # ------------------ Authorization Check ------------------
+    OFFICIAL_GROUPS = ["-1002311378229"]  # your group ID
+
+    if str(message.chat.id) not in OFFICIAL_GROUPS:
+        await message.reply("❌ This command only works in our official group.")
+        return
+    # ---------------------------------------------------------
+
     if len(message.command) < 2:
         await message.reply_text("Usage: `/poster Movie Name 2025`", quote=True)
         return
