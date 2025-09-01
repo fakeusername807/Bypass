@@ -1,9 +1,10 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import Config  # import the class directly
+from config import OWNER_ID, AUTH  # import variables directly
 from globals import AuthU
 
-OWNER = Config.OWNER_ID  # access via Config
+OWNER = str(OWNER_ID)
+AuthU = AUTH  # initialize AuthU from config
 
 # Helper function to check if user or chat is authorized
 def is_authorized(user_id: int) -> bool:
@@ -15,7 +16,7 @@ async def add_auth(client, message: Message):
     global AuthU
     args = message.text.split(" ", 1)
 
-    if str(message.from_user.id) not in str(OWNER):
+    if str(message.from_user.id) not in OWNER:
         await message.reply("❌ You are not authorized to add users/chats!")
         return
 
@@ -40,7 +41,7 @@ async def remove_auth(client, message: Message):
     global AuthU
     args = message.text.split(" ", 1)
 
-    if str(message.from_user.id) not in str(OWNER):
+    if str(message.from_user.id) not in OWNER:
         await message.reply("❌ You are not authorized to remove users/chats!")
         return
 
@@ -64,7 +65,7 @@ async def remove_auth(client, message: Message):
 # View authorized IDs
 @Client.on_message(filters.command("listauth"))
 async def list_auth(client, message: Message):
-    if str(message.from_user.id) not in str(OWNER):
+    if str(message.from_user.id) not in OWNER:
         await message.reply("❌ You are not authorized to view the list!")
         return
 
@@ -86,7 +87,7 @@ async def list_auth(client, message: Message):
 # Raw list of IDs
 @Client.on_message(filters.command("checkauth"))
 async def check_auth(client, message: Message):
-    if str(message.from_user.id) not in str(OWNER):
+    if str(message.from_user.id) not in OWNER:
         await message.reply("❌ You are not authorized to view the list!")
         return
 
