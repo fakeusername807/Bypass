@@ -26,7 +26,14 @@ async def health(_, message: Message):
 # ===== PRIME SCRAPER =====
 @Client.on_message(filters.command("prime"))
 async def prime_scraper(_, message: Message):
-    # If no URL is given after /prime
+    # ------------------ Authorization Check ------------------
+    OFFICIAL_GROUPS = ["-1002311378229"]  # your group ID
+
+    if str(message.chat.id) not in OFFICIAL_GROUPS:
+        await message.reply("❌ This command only works in our official group.")
+        return
+    # ---------------------------------------------------------
+
     if len(message.command) == 1:
         return await message.reply_text(
             "⚠️ Please provide a Prime Video URL.\n\n"
