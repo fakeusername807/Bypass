@@ -1,28 +1,35 @@
-# auth_handler.py
+# plugins/auth_handler.py
 import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pymongo import MongoClient
 
-# ✅ Owner ID
+# ✅ Owner ID (only this ID can authorize groups)
 OWNER_ID = int(os.environ.get("OWNER_ID", "6390511215"))
 
 # ✅ MongoDB Setup
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://scrape:scrape@cluster0.frrzcbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+MONGO_URL = os.environ.get("MONGO_URL")
 mongo_client = MongoClient(MONGO_URL)
 db = mongo_client["auth_db"]  # Database
 groups_col = db["authorized_groups"]  # Collection
 
-# ✅ Get all authorized groups as a set (cached)
-def get_authorized_groups():
-    return {g["chat_id"] for g in groups_col.find()}
-
-authorized_groups = get_authorized_groups()
+# ✅ Cache for quick checks
+authorized_groups = set()
 
 
-def add_authorized_group(chat_id: int):
-    """Add group to MongoDB + cache"""
-    groups_col.update_one({"chat_id": chat_id}, {"$set": {"chat_id": chat_id}}, upsert=True)
+def load_groups():
+    """Load authorized groups into memory"""
+    global authorized_groups
+    authorized_groups = {g["chat_id"] for g in groups_col.find()}
+
+
+def add_group(chat_id: int):
+    """Add a group to MongoDB + cache"""
+    groups_col.update_one(
+        {"chat_id": chat_id},
+        {"$set": {"chat_id": chat_id}},
+        upsert=True
+    )
     authorized_groups.add(chat_id)
 
 
@@ -35,7 +42,7 @@ async def authorize_group(client: Client, message: Message):
     if message.chat.type in ["group", "supergroup"]:
         chat_id = message.chat.id
         if chat_id not in authorized_groups:
-            add_authorized_group(chat_id)
+            add_group(chat_id)
             await message.reply_text("✅ This group has been authorized to use the bot.")
         else:
             await message.reply_text("⚡ This group is already authorized.")
@@ -53,4 +60,8 @@ async def check_group_auth(client: Client, message: Message):
             "🚫 This group is not authorized to use the bot.\n"
             "Only the owner can authorize with /auth"
         )
-    # ⚡ If authorized → command handlers from plugins will run normally
+    # ⚡ If group is authorized → other command handlers will work
+
+
+# ✅ Load groups at startup
+load_groups()
