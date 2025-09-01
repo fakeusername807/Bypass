@@ -8,7 +8,7 @@ from pymongo import MongoClient
 OWNER_ID = int(os.environ.get("OWNER_ID", "6390511215"))
 
 # ✅ MongoDB Setup
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://username:password@cluster/dbname")
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://scrape:scrape@cluster0.frrzcbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 mongo_client = MongoClient(MONGO_URL)
 db = mongo_client["auth_db"]  # Database
 groups_col = db["authorized_groups"]  # Collection
