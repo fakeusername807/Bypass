@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from configs import OWNER_ID, groups_col  # import OWNER_ID and MongoDB collection from config
+from configs import OWNER_ID, groups_col  # import OWNER_ID and MongoDB collection from configs
 
 # ✅ In-memory cache for authorized groups
 authorized_groups = set()
