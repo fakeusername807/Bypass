@@ -1,17 +1,6 @@
-# plugins/auth_handler.py
-import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from pymongo import MongoClient
-
-# ✅ Owner ID (only this ID can authorize groups)
-OWNER_ID = int(os.environ.get("OWNER_ID", "6390511215"))
-
-# ✅ MongoDB Setup
-MONGO_URL = os.environ.get("MONGO_URL")
-mongo_client = MongoClient(MONGO_URL)
-db = mongo_client["auth_db"]  # Database
-groups_col = db["authorized_groups"]  # Collection
+from config import OWNER_ID, groups_col  # import from config
 
 # ✅ Cache for quick checks
 authorized_groups = set()
