@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from configs import OWNER_ID, groups_col  # MongoDB collection
-from globals import AuthU  # your dynamic user/chat authorization
+from config import OWNER_ID, groups_col  # MongoDB collection
+from globals import AuthU  # dynamic user/chat authorization
 
 # ---------------------- In-memory cache ----------------------
 authorized_groups = set()
