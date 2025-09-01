@@ -5,7 +5,7 @@ from pyrogram.types import Message
 from pymongo import MongoClient
 
 # ✅ Owner ID
-OWNER_ID = int(os.environ.get("OWNER_ID", "123456789"))
+OWNER_ID = int(os.environ.get("OWNER_ID", "6390511215"))
 
 # ✅ MongoDB Setup
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://username:password@cluster/dbname")
