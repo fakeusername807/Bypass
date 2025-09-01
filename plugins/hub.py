@@ -37,16 +37,35 @@ async def hubcloud_handler(client: Client, message: Message):
             await wait_msg.edit_text("❌ No links found in response.")
             return
 
-        # Format and send each file info separately
-        final_text = "✅ **HubCloud Extracted Links:**\n\n"
+        # Deduplicate links (avoid repeated mirrors)
+        seen = set()
+        unique_files = []
         for f in files:
+            link = f.get("link")
+            if link not in seen:
+                seen.add(link)
+                unique_files.append(f)
+
+        # Format and send each file info
+        text = "✅ **HubCloud Extracted Links:**\n\n"
+        for f in unique_files:
             name = f.get("name", "Unknown File")
             size = f.get("size", "Unknown Size")
             link = f.get("link", "")
 
-            final_text += f"🎬 **{name}**\n💾 `{size}`\n🔗 [Download Link]({link})\n\n"
+            # Detect mirror type
+            if "pixeldrain.dev" in link:
+                mirror = "🟢 **Pixeldrain**"
+            elif "fastcloud.casa" in link:
+                mirror = "🔵 **FSL**"
+            elif "hubcdn.fans" in link:
+                mirror = "🟣 **10GBs**"
+            else:
+                mirror = "📁 **Mirror**"
 
-        await wait_msg.edit_text(final_text, disable_web_page_preview=True)
+            text += f"{mirror}\n🎬 **{name}**\n💾 `{size}`\n🔗 [Download Link]({link})\n\n"
+
+        await wait_msg.edit_text(text, disable_web_page_preview=True)
 
     except Exception as e:
         await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
