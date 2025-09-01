@@ -5,7 +5,7 @@ import aiohttp
 
 WORKER_URL = "https://zee.botzs.workers.dev/"
 
-@Client.on_message(filters.command("zee5") & filters.private)
+@Client.on_message(filters.command("zee5"))  # works in private & groups
 async def zee5_poster(client: Client, message: Message):
     if len(message.command) < 2:
         await message.reply_text(
@@ -31,17 +31,18 @@ async def zee5_poster(client: Client, message: Message):
             await message.reply_text(f"No poster found for {movie_name}.")
             return
 
-        # Format message exactly as requested
+        # Format message with multiple clickable links
         landscape_text = ""
         for i, url in enumerate(landscape, start=1):
             landscape_text += f"{i}. <a href=\"{url}\">Click Here</a>\n"
 
-        text = f"Zee Poster: {landscape[0]}\n\n" \
-               f"🌄 Landscape:\n{landscape_text}\n" \
-               f"🎬 {movie_name}\n\n" \
-               f"Powered By @AddaFiles"
+        text = (
+            f"Zee Poster: {landscape[0]}\n\n"
+            f"🌄 Landscape:\n{landscape_text}\n"
+            f"🎬 {movie_name}\n\n"
+            f"Powered By @AddaFiles"
+        )
 
-        # Send message with clickable links only, no photo
         await message.reply_text(
             text=text,
             parse_mode=ParseMode.HTML,
