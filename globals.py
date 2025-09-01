@@ -1,4 +1,4 @@
-from config import OWNER_ID  # import directly from config
+from config import Config  # import the Config class directly
 
 # Dynamic user/chat authorization list
-AuthU = ""  # start empty, or load from DB if you want
+AuthU = Config.AUTH  # start empty or load from DB if needed
