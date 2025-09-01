@@ -6,48 +6,18 @@ from globals import AuthU
 OWNER = str(OWNER_ID)
 AuthU = AUTH  # initialize AuthU from config
 
-# ---------------------------
-# Helper functions
-# ---------------------------
+# Helper function to check if user or chat is authorized
+def is_authorized(user_id: int) -> bool:
+    return str(user_id) in AuthU.split(",")
 
-def is_authorized(user_id: int, chat_id: int = None) -> bool:
-    """
-    Check if a user or a chat is authorized.
-    """
-    auth_list = AuthU.split(",")
-    if str(user_id) in auth_list:
-        return True
-    if chat_id and str(chat_id) in auth_list:
-        return True
-    return False
-
-def auth_required(func):
-    """
-    Decorator to enforce authorization on commands.
-    """
-    async def wrapper(client, message: Message):
-        user_id = message.from_user.id
-        chat_id = message.chat.id
-        if not is_authorized(user_id, chat_id):
-            await message.reply(
-                "❌ You are not authorized to use this command!\n\n"
-                "Now you can use it after authorization ✅"
-            )
-            return
-        return await func(client, message)
-    return wrapper
-
-# ---------------------------
-# Auth management commands
-# ---------------------------
-
+# Command to add a user or chat ID to AuthU
 @Client.on_message(filters.command("addauth"))
 async def add_auth(client, message: Message):
     global AuthU
     args = message.text.split(" ", 1)
 
-    if str(message.from_user.id) != OWNER:
-        await message.reply("❌ Only the owner can add users/groups!")
+    if str(message.from_user.id) not in OWNER:
+        await message.reply("❌ You are not authorized to add users/chats!")
         return
 
     if len(args) < 2:
@@ -65,13 +35,14 @@ async def add_auth(client, message: Message):
         AuthU += f",{new_id}" if AuthU else new_id
         await message.reply(f"✅ ID `{new_id}` has been added to the authorized list.")
 
+# Command to remove a user or chat ID from AuthU
 @Client.on_message(filters.command("removeauth"))
 async def remove_auth(client, message: Message):
     global AuthU
     args = message.text.split(" ", 1)
 
-    if str(message.from_user.id) != OWNER:
-        await message.reply("❌ Only the owner can remove users/groups!")
+    if str(message.from_user.id) not in OWNER:
+        await message.reply("❌ You are not authorized to remove users/chats!")
         return
 
     if len(args) < 2:
@@ -91,74 +62,33 @@ async def remove_auth(client, message: Message):
     else:
         await message.reply(f"❌ ID `{remove_id}` is not in the authorized list.")
 
+# View authorized IDs
 @Client.on_message(filters.command("listauth"))
 async def list_auth(client, message: Message):
-    if str(message.from_user.id) != OWNER:
-        await message.reply("❌ Only the owner can view the list!")
+    if str(message.from_user.id) not in OWNER:
+        await message.reply("❌ You are not authorized to view the list!")
         return
 
     global AuthU
-    auth_list = [i for i in AuthU.split(",") if i and i not in ["0", "0000000000"]]
+    auth_list = AuthU.split(",")
+    valid_auth_list = [i for i in auth_list if i and i not in ["0", "0000000000"]]
 
-    if not auth_list:
-        await message.reply("❌ No authorized IDs found.")
+    if not valid_auth_list:
+        await message.reply("❌ No valid authorized IDs found.")
         return
 
     text_lines = []
-    for i in auth_list:
+    for i in valid_auth_list:
         mention = f"[Jump](tg://user?id={i})" if not i.startswith("-") else "Group/Channel"
         text_lines.append(f"🔹 `{i}` - {mention}")
 
     await message.reply("**🔐 Authorized IDs:**\n\n" + "\n".join(text_lines), disable_web_page_preview=True)
 
+# Raw list of IDs
 @Client.on_message(filters.command("checkauth"))
 async def check_auth(client, message: Message):
-    if str(message.from_user.id) != OWNER:
-        await message.reply("❌ Only the owner can view the raw list!")
+    if str(message.from_user.id) not in OWNER:
+        await message.reply("❌ You are not authorized to view the list!")
         return
 
     await message.reply(f"**🔐 Authorized IDs (raw):**\n\n`{AuthU}`")
-
-# ---------------------------
-# User commands (protected)
-# ---------------------------
-
-@Client.on_message(filters.command("start"))
-@auth_required
-async def start(client, message: Message):
-    await message.reply("✅ Bot is alive and you are authorized!")
-
-@Client.on_message(filters.command("prime"))
-@auth_required
-async def prime_posters(client, message: Message):
-    await message.reply("✅ Now u can use")
-
-@Client.on_message(filters.command("gd"))
-@auth_required
-async def gd_links(client, message: Message):
-    await message.reply("✅ Now u can use")
-
-@Client.on_message(filters.command("gdflix"))
-@auth_required
-async def gdflix_links(client, message: Message):
-    await message.reply("✅ Now u can use")
-
-@Client.on_message(filters.command("p"))
-@auth_required
-async def p_posters(client, message: Message):
-    await message.reply("✅ Now u can use")
-
-@Client.on_message(filters.command("poster"))
-@auth_required
-async def poster_command(client, message: Message):
-    await message.reply("✅ Now u can use")
-
-@Client.on_message(filters.command("hub"))
-@auth_required
-async def hub_command(client, message: Message):
-    await message.reply("✅ Now u can use")
-
-@Client.on_message(filters.command("zee5"))
-@auth_required
-async def zee5_command(client, message: Message):
-    await message.reply("✅ Now u can use")
