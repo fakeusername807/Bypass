@@ -1,4 +1,4 @@
-from config import Config  # import the Config class directly
+from config import AUTH
 
 # Dynamic user/chat authorization list
-AuthU = Config.AUTH  # start empty or load from DB if needed
+AuthU = AUTH  # starts with the initial IDs from config
