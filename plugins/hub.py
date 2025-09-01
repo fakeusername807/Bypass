@@ -18,17 +18,21 @@ async def hubcloud_handler(client: Client, message: Message):
 
     if len(message.command) < 2:
         await message.reply_text(
-            "❌ Usage:\n`/hub <hubcloud_url>`\nor\n`/hubcloud <hubcloud_url>`"
+            "❌ Usage:\n`/hub <hubcloud_url>`\nor\n`/hubcloud <hubcloud_url1> <hubcloud_url2> ...`"
         )
         return
 
-    hubcloud_url = message.command[1].strip()
+    # Collect all links after the command (can be space, comma, or newline separated)
+    raw_links = " ".join(message.command[1:])
+    hubcloud_urls = [u.strip() for u in raw_links.replace("\n", " ").replace(",", " ").split() if u.strip()]
+
     wait_msg = await message.reply_text("🔍 Fetching links...")
 
     try:
         async with aiohttp.ClientSession() as session:
-            params = {"url": hubcloud_url}
-            async with session.get(WORKER_URL, params=params, timeout=40) as resp:
+            # Send multiple URLs joined with commas
+            params = {"url": ",".join(hubcloud_urls)}
+            async with session.get(WORKER_URL, params=params, timeout=60) as resp:
                 data = await resp.json()
 
         files = data.get("files", [])
