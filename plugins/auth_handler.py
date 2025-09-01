@@ -37,15 +37,29 @@ async def authorize_group(client: Client, message: Message):
     if message.from_user.id != OWNER_ID:
         return await message.reply_text("❌ You are not authorized to use this command.")
 
+    chat_id = None
+
+    # If command sent inside a group → use that group
     if message.chat.type in ["group", "supergroup"]:
         chat_id = message.chat.id
+    # If command sent in private → check for argument
+    elif message.chat.type == "private":
+        if len(message.command) < 2:
+            return await message.reply_text(
+                "⚠️ Please provide the group ID to authorize.\nExample: /auth -1001234567890"
+            )
+        try:
+            chat_id = int(message.command[1])
+        except ValueError:
+            return await message.reply_text("❌ Invalid group ID. Make sure it's a number.")
+
+    # Add the group
+    if chat_id is not None:
         if chat_id not in authorized_groups:
             add_group(chat_id)
-            await message.reply_text("✅ This group has been authorized to use the bot.")
+            await message.reply_text(f"✅ Group `{chat_id}` has been authorized to use the bot.", parse_mode="markdown")
         else:
-            await message.reply_text("⚡ This group is already authorized.")
-    else:
-        await message.reply_text("⚠️ Use this command inside a group.")
+            await message.reply_text(f"⚡ Group `{chat_id}` is already authorized.", parse_mode="markdown")
 
 
 # ✅ Restrict usage of commands to authorized groups only
