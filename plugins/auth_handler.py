@@ -1,9 +1,9 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import Config
+from config import *
 from globals import AuthU
 
-OWNER = Config.OWNER
+OWNER_ID = Config.OWNER_ID
 
 # Helper function to check if user or chat is authorized
 def is_authorized(user_id: int) -> bool:
