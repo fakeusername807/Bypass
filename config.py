@@ -9,6 +9,8 @@ BOT_TOKEN = genv("BOT_TOKEN", "")
 # Worker URL
 WORKER_URL = "https://adda.botzs.workers.dev"
 
+AUTH = genv("AUTH", "-1002311378229")
+                 
 # Owner ID
 OWNER_ID = int(genv("OWNER_ID", "6390511215"))
 
