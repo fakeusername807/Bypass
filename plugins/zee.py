@@ -5,8 +5,15 @@ import aiohttp
 
 WORKER_URL = "https://zee.botzs.workers.dev/"
 
-@Client.on_message(filters.command("zee5"))  # works in private & groups
+@Client.on_message(filters.command("zee5"))
 async def zee5_poster(client: Client, message: Message):
+    # ------------------ Authorization Check ------------------
+    OFFICIAL_GROUPS = ["-1002311378229"]  # your official group ID
+    if str(message.chat.id) not in OFFICIAL_GROUPS:
+        await message.reply("❌ This command only works in our official group.")
+        return
+    # ---------------------------------------------------------
+
     if len(message.command) < 2:
         await message.reply_text(
             "Send a ZEE5 movie URL like:\n/zee5 https://www.zee5.com/movies/details/krack/0-0-1z51604"
@@ -40,7 +47,7 @@ async def zee5_poster(client: Client, message: Message):
             f"Zee Poster: {landscape[0]}\n\n"
             f"🌄 Landscape:\n{landscape_text}\n"
             f"🎬 {movie_name}\n\n"
-            f"Powered By @AddaFiles"
+            f"⚡ Powered By @AddaFiles"
         )
 
         await message.reply_text(
@@ -50,4 +57,4 @@ async def zee5_poster(client: Client, message: Message):
         )
 
     except Exception as e:
-        await message.reply_text(f"Error fetching poster: {e}")
+        await message.reply_text(f"⚠️ Error fetching poster: {e}")
