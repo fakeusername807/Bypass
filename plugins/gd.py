@@ -1,13 +1,22 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
-import json
 
 WORKER_URL = "https://gdflix.botzs.workers.dev/?url="
 
 # ===== GD / GDFLIX COMMAND =====
 @Client.on_message(filters.command(["gd", "gdflix"]))
 async def gd_scraper(_, message: Message):
+    # ------------------ Authorization Check ------------------
+    # Replace with your official group IDs (comma-separated)
+    OFFICIAL_GROUPS = ["-1002311378229"]
+
+    if str(message.chat.id) not in OFFICIAL_GROUPS:
+        await message.reply("❌ This command only works in our official group.")
+        return
+    # ---------------------------------------------------------
+
+    # Validate links
     if len(message.command) == 1:
         return await message.reply_text(
             "⚠️ Usage: `/gd <gdlink1> <gdlink2> ... (upto 5)`",
