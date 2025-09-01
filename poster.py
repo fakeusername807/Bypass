@@ -1,6 +1,6 @@
 import aiohttp
 from aiohttp import web
-from configs import *
+from config import *  # <- fixed import
 from pyrogram import Client
 import asyncio
 
