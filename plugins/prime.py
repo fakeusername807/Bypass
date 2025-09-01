@@ -1,4 +1,4 @@
-from configs import *
+from config import *
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
