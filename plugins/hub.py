@@ -23,18 +23,29 @@ async def hubcloud_handler(client: Client, message: Message):
         return
 
     hubcloud_url = message.command[1].strip()
-    await message.reply_text("🔍 Fetching Pixeldrain link...")
+    wait_msg = await message.reply_text("🔍 Fetching Pixeldrain links...")
 
     try:
         async with aiohttp.ClientSession() as session:
             params = {"url": hubcloud_url}
-            async with session.get(WORKER_URL, params=params, timeout=20) as resp:
+            async with session.get(WORKER_URL, params=params, timeout=40) as resp:
                 data = await resp.json()
 
-        pixeldrain_link = data.get("pixeldrain")
-        if pixeldrain_link:
-            await message.reply_text(f"✅ **Pixeldrain link:**\n{pixeldrain_link}")
-        else:
-            await message.reply_text("❌ Pixeldrain link not found in response.")
+        files = data.get("files", [])
+
+        if not files:
+            await wait_msg.edit_text("❌ No Pixeldrain links found in response.")
+            return
+
+        # Format and send each file info
+        text = "✅ **Pixeldrain Results:**\n\n"
+        for f in files:
+            name = f.get("name", "Unknown File")
+            size = f.get("size", "Unknown Size")
+            link = f.get("link", "")
+            text += f"🎬 **{name}**\n💾 `{size}`\n🔗 [Download Link]({link})\n\n"
+
+        await wait_msg.edit_text(text, disable_web_page_preview=True)
+
     except Exception as e:
-        await message.reply_text(f"⚠️ Error:\n`{e}`")
+        await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
