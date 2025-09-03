@@ -7,7 +7,6 @@ from pyrogram.enums import ParseMode
 
 WORKER_URL = "https://air.botzs.workers.dev/?url="
 
-# OTT Detection Map (Removed airtelxstream)
 OTT_MAP = {
     "zee5": "ZEE5",
     "hotstar": "JioHotstar",
@@ -41,13 +40,11 @@ OTT_MAP = {
 }
 
 def detect_ott(url: str) -> str:
-    """Detect OTT platform from domain"""
     try:
         domain = urlparse(url).netloc.lower()
         for key, name in OTT_MAP.items():
             if key in domain:
                 return name
-        # Special case: Airtel Xstream (not in map anymore)
         if "airtelxstream" in domain:
             return "Airtel Xstream"
     except Exception:
@@ -55,28 +52,24 @@ def detect_ott(url: str) -> str:
     return "OTT"
 
 def extract_title_year(url: str) -> str:
-    """Scrape movie title + year from OTT page"""
     try:
         res = requests.get(url, timeout=10)
         soup = BeautifulSoup(res.text, "html.parser")
 
         title = soup.find("meta", property="og:title")
-        if title and title.get("content"):
-            title_text = title["content"]
-        else:
-            title_text = soup.title.string if soup.title else "Unknown Movie"
+        title_text = title["content"] if title and title.get("content") else (
+            soup.title.string if soup.title else "Unknown Movie"
+        )
 
         year_match = re.search(r"\b(19|20)\d{2}\b", title_text)
         year = year_match.group(0) if year_match else "Unknown"
 
         clean_title = re.sub(r"\(\d{4}\)|\d{4}", "", title_text).strip()
-
         return f"{clean_title} ({year})"
     except Exception:
         return "Unknown Movie"
 
 def extract_poster(url: str) -> str:
-    """Scrape poster (og:image) if worker fails"""
     try:
         res = requests.get(url, timeout=10)
         soup = BeautifulSoup(res.text, "html.parser")
@@ -88,8 +81,7 @@ def extract_poster(url: str) -> str:
     return None
 
 
-# ========= /airtel or /airtelxtream =========
-@Client.on_message(filters.command(["airtel", "airtelxtream"]))
+@Client.on_message(filters.command(["airtel", "airtelxstream"]))
 async def airtel_handler(client, message):
     try:
         if len(message.command) < 2:
@@ -101,23 +93,23 @@ async def airtel_handler(client, message):
         ott_name = detect_ott(movie_url)
         movie_name = extract_title_year(movie_url)
 
-        # Try Worker first
         api_url = f"{WORKER_URL}{movie_url}"
         res = requests.get(api_url).json()
         poster_url = res.get("image")
+        landscape_url = res.get("original")
 
-        # Fallback: if worker fails or returns AddaFiles default
         if not poster_url or "AddaFiles.jpg" in poster_url:
             poster_url = extract_poster(movie_url)
 
         if not poster_url:
-            await message.reply_text("❌ Poster not found")
-            return
+            poster_url = "https://i.ibb.co/p6HVXFQm/AddaFiles.jpg"
+
+        if not landscape_url:
+            landscape_url = poster_url  # fallback
 
         text = (
             f"<b>{ott_name}</b> Poster: {poster_url}\n\n"
-            f"🌄 <b>Landscape Posters:</b>\n"
-            f"1. <a href=\"{poster_url}\">Click Here</a>\n\n"
+            f"🌄 <b>Landscape:</b> <a href=\"{landscape_url}\">Click Here</a>\n\n"
             f"🎬 {movie_name}\n\n"
             f"⚡ Powered By @AddaFiles"
         )
