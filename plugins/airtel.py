@@ -53,19 +53,15 @@ def extract_title_year(url: str) -> str:
         res = requests.get(url, timeout=10)
         soup = BeautifulSoup(res.text, "html.parser")
 
-        # Try meta title
         title = soup.find("meta", property="og:title")
         if title and title.get("content"):
             title_text = title["content"]
         else:
-            # fallback → <title> tag
             title_text = soup.title.string if soup.title else "Unknown Movie"
 
-        # Extract year if present
         year_match = re.search(r"\b(19|20)\d{2}\b", title_text)
         year = year_match.group(0) if year_match else "Unknown"
 
-        # Clean movie title
         clean_title = re.sub(r"\(\d{4}\)|\d{4}", "", title_text).strip()
 
         return f"{clean_title} ({year})"
@@ -75,26 +71,22 @@ def extract_title_year(url: str) -> str:
 
 # ========= /airtel or /airtelxtream =========
 @Client.on_message(filters.command(["airtel", "airtelxtream"]))
-def airtel_handler(client, message):
+async def airtel_handler(client, message):  # <-- async here
     try:
         if len(message.command) < 2:
-            message.reply_text("❌ Usage: /airtel <movie_url>")
+            await message.reply_text("❌ Usage: /airtel <movie_url>")
             return
 
         movie_url = message.command[1]
 
-        # Detect OTT
         ott_name = detect_ott(movie_url)
-
-        # Extract movie title + year
         movie_name = extract_title_year(movie_url)
 
-        # Fetch poster from Worker
         api_url = f"{WORKER_URL}{movie_url}"
         res = requests.get(api_url).json()
 
         if "image" not in res:
-            message.reply_text("❌ Poster not found from worker")
+            await message.reply_text("❌ Poster not found from worker")
             return
 
         poster_url = res["image"]
@@ -107,11 +99,11 @@ def airtel_handler(client, message):
             f"⚡ Powered By @AddaFiles"
         )
 
-        message.reply_text(
+        await message.reply_text(   # <-- await here
             text=text,
             parse_mode=ParseMode.HTML,
             disable_web_page_preview=False
         )
 
     except Exception as e:
-        message.reply_text(f"❌ Error: {str(e)}")
+        await message.reply_text(f"❌ Error: {str(e)}")  # <-- await here
