@@ -69,18 +69,6 @@ def extract_title_year(url: str) -> str:
     except Exception:
         return "Unknown Movie"
 
-def extract_poster(url: str) -> str:
-    try:
-        res = requests.get(url, timeout=10)
-        soup = BeautifulSoup(res.text, "html.parser")
-        og_image = soup.find("meta", property="og:image")
-        if og_image and og_image.get("content"):
-            return og_image["content"]
-    except Exception:
-        pass
-    return None
-
-
 @Client.on_message(filters.command(["airtel", "airtelxstream"]))
 async def airtel_handler(client, message):
     try:
@@ -89,30 +77,23 @@ async def airtel_handler(client, message):
             return
 
         movie_url = message.command[1]
-
         ott_name = detect_ott(movie_url)
         movie_name = extract_title_year(movie_url)
 
         api_url = f"{WORKER_URL}{movie_url}"
         res = requests.get(api_url).json()
         poster_url = res.get("image")
-        landscape_url = res.get("original")
 
-        if not poster_url or "AddaFiles.jpg" in poster_url:
-            poster_url = extract_poster(movie_url)
-
-        if not poster_url:
-            poster_url = "https://i.ibb.co/p6HVXFQm/AddaFiles.jpg"
-
-        if not landscape_url:
-            landscape_url = poster_url  # fallback
-
-        text = (
-            f"<b>{ott_name}</b> Poster: {poster_url}\n\n"
-            f"🌄 <b>Landscape:</b> <a href=\"{landscape_url}\">Click Here</a>\n\n"
-            f"🎬 {movie_name}\n\n"
-            f"⚡ Powered By @AddaFiles"
-        )
+        if not poster_url:  # No poster → skip
+            text = f"🎬 {movie_name}\n\n<b>{ott_name}</b>\n\n⚡ Powered By @ADDAFILES"
+        else:
+            text = (
+                f"<b>{ott_name}</b> Poster: <a href=\"{poster_url}\">Click Here</a>\n\n"
+                f"🌄 <b>Landscape Posters:</b>\n"
+                f"1. <a href=\"{poster_url}\">Click Here</a>\n\n"
+                f"🎬 {movie_name}\n\n"
+                f"⚡ Powered By @ADDAFILES"
+            )
 
         await message.reply_text(
             text=text,
