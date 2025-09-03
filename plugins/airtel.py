@@ -42,13 +42,26 @@ OTT_MAP = {
 def detect_ott(url: str) -> str:
     try:
         domain = urlparse(url).netloc.lower()
+
+        # Normal OTT detection for non-Airtel links
         for key, name in OTT_MAP.items():
             if key in domain:
                 return name
+
+        # Special case for AirtelXstream
         if "airtelxstream" in domain:
-            return "Airtel Xstream"
+            last_part = url.rstrip("/").split("/")[-1]
+            ott_code = last_part.split("_")[0].lower()  # e.g., SUNNXT_MOVIE_12968 → sunnxt
+
+            # Map to proper name if available
+            for key, name in OTT_MAP.items():
+                if key in ott_code:
+                    return name
+
+            return "Airtel Xstream"  # fallback if no match
     except Exception:
         pass
+
     return "OTT"
 
 def extract_title_year(url: str) -> str:
