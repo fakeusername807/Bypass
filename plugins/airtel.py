@@ -2,7 +2,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 from pyrogram import Client, filters
-
+from pyrogram.enums import ParseMode
 
 WORKER_URL = "https://air.botzs.workers.dev/?url="
 
@@ -47,7 +47,6 @@ def detect_ott(url: str) -> str:
             return name
     return "OTT"
 
-
 def extract_title_year(url: str) -> str:
     """Scrape movie title + year from OTT page"""
     try:
@@ -62,12 +61,9 @@ def extract_title_year(url: str) -> str:
             # fallback → <title> tag
             title_text = soup.title.string if soup.title else "Unknown Movie"
 
-        # Extract year if present in text
+        # Extract year if present
         year_match = re.search(r"\b(19|20)\d{2}\b", title_text)
-        if year_match:
-            year = year_match.group(0)
-        else:
-            year = "Unknown"
+        year = year_match.group(0) if year_match else "Unknown"
 
         # Clean movie title
         clean_title = re.sub(r"\(\d{4}\)|\d{4}", "", title_text).strip()
@@ -78,7 +74,7 @@ def extract_title_year(url: str) -> str:
 
 
 # ========= /airtel or /airtelxtream =========
-@bot.on_message(filters.command(["airtel", "airtelxtream"]))
+@Client.on_message(filters.command(["airtel", "airtelxtream"]))
 def airtel_handler(client, message):
     try:
         if len(message.command) < 2:
@@ -103,16 +99,19 @@ def airtel_handler(client, message):
 
         poster_url = res["image"]
 
-        reply_text = f"""{ott_name} Poster: {poster_url}
+        text = (
+            f"{ott_name} Poster: {poster_url}\n\n"
+            f"🌄 Landscape Posters:\n"
+            f"1. <a href=\"{poster_url}\">Click Here</a>\n\n"
+            f"🎬 {movie_name}\n\n"
+            f"⚡ Powered By @AddaFiles"
+        )
 
-🌄 Landscape Posters:
-1. [Click Here]({poster_url})
-
-🎬 {movie_name}
-
-Powered By @AddaFiles"""
-
-        message.reply_text(reply_text, disable_web_page_preview=False)
+        message.reply_text(
+            text=text,
+            parse_mode=ParseMode.HTML,
+            disable_web_page_preview=False
+        )
 
     except Exception as e:
         message.reply_text(f"❌ Error: {str(e)}")
