@@ -1,14 +1,14 @@
 import requests
 import re
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 
 WORKER_URL = "https://air.botzs.workers.dev/?url="
 
-# OTT Detection Map
+# OTT Detection Map (Removed airtelxstream)
 OTT_MAP = {
-    "airtelxstream": "Airtel Xstream",
     "zee5": "ZEE5",
     "hotstar": "JioHotstar",
     "disneyplus": "Disney+ Hotstar",
@@ -41,10 +41,17 @@ OTT_MAP = {
 }
 
 def detect_ott(url: str) -> str:
-    url = url.lower()
-    for key, name in OTT_MAP.items():
-        if key in url:
-            return name
+    """Detect OTT platform from domain"""
+    try:
+        domain = urlparse(url).netloc.lower()
+        for key, name in OTT_MAP.items():
+            if key in domain:
+                return name
+        # Special case: Airtel Xstream (not in map anymore)
+        if "airtelxstream" in domain:
+            return "Airtel Xstream"
+    except Exception:
+        pass
     return "OTT"
 
 def extract_title_year(url: str) -> str:
@@ -68,10 +75,22 @@ def extract_title_year(url: str) -> str:
     except Exception:
         return "Unknown Movie"
 
+def extract_poster(url: str) -> str:
+    """Scrape poster (og:image) if worker fails"""
+    try:
+        res = requests.get(url, timeout=10)
+        soup = BeautifulSoup(res.text, "html.parser")
+        og_image = soup.find("meta", property="og:image")
+        if og_image and og_image.get("content"):
+            return og_image["content"]
+    except Exception:
+        pass
+    return None
+
 
 # ========= /airtel or /airtelxtream =========
 @Client.on_message(filters.command(["airtel", "airtelxtream"]))
-async def airtel_handler(client, message):  # <-- async here
+async def airtel_handler(client, message):
     try:
         if len(message.command) < 2:
             await message.reply_text("❌ Usage: /airtel <movie_url>")
@@ -82,28 +101,32 @@ async def airtel_handler(client, message):  # <-- async here
         ott_name = detect_ott(movie_url)
         movie_name = extract_title_year(movie_url)
 
+        # Try Worker first
         api_url = f"{WORKER_URL}{movie_url}"
         res = requests.get(api_url).json()
+        poster_url = res.get("image")
 
-        if "image" not in res:
-            await message.reply_text("❌ Poster not found from worker")
+        # Fallback: if worker fails or returns AddaFiles default
+        if not poster_url or "AddaFiles.jpg" in poster_url:
+            poster_url = extract_poster(movie_url)
+
+        if not poster_url:
+            await message.reply_text("❌ Poster not found")
             return
 
-        poster_url = res["image"]
-
         text = (
-            f"{ott_name} Poster: {poster_url}\n\n"
-            f"🌄 Landscape Posters:\n"
+            f"<b>{ott_name}</b> Poster: {poster_url}\n\n"
+            f"🌄 <b>Landscape Posters:</b>\n"
             f"1. <a href=\"{poster_url}\">Click Here</a>\n\n"
             f"🎬 {movie_name}\n\n"
             f"⚡ Powered By @AddaFiles"
         )
 
-        await message.reply_text(   # <-- await here
+        await message.reply_text(
             text=text,
             parse_mode=ParseMode.HTML,
             disable_web_page_preview=False
         )
 
     except Exception as e:
-        await message.reply_text(f"❌ Error: {str(e)}")  # <-- await here
+        await message.reply_text(f"❌ Error: {str(e)}")
