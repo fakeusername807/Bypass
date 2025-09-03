@@ -2,4 +2,5 @@ aiohttp
 pyrogram
 TgCrypto
 requests==2.31.0
-pymongo
+beautifulsoup4
+lxml
