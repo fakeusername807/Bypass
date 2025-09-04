@@ -88,9 +88,22 @@ async def sticker_handler(client, message):
 
         url = args[1]
         img = Image.open(BytesIO(requests.get(url).content)).convert("RGBA")
+
+        # Resize to fit within 512x512 (Telegram sticker requirement)
+        max_size = 512
+        w, h = img.size
+        if w > h:
+            new_w = max_size
+            new_h = int(h * max_size / w)
+        else:
+            new_h = max_size
+            new_w = int(w * max_size / h)
+        img = img.resize((new_w, new_h), Image.LANCZOS)
+
+        # Save as WEBP for Telegram sticker
         output = BytesIO()
         output.name = "sticker.webp"
-        img.save(output, format="WEBP")
+        img.save(output, "WEBP")
         output.seek(0)
 
         await message.reply_sticker(output)
