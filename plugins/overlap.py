@@ -1,7 +1,7 @@
 import requests
 from io import BytesIO
 from PIL import Image, ImageEnhance
-from pyrogram import filters
+from pyrogram import Client, filters
 
 # Predefined positions
 def get_position(bg_w, bg_h, logo_w, logo_h, position, x_offset=0, y_offset=0):
@@ -21,7 +21,7 @@ def get_position(bg_w, bg_h, logo_w, logo_h, position, x_offset=0, y_offset=0):
         return (bg_w - logo_w + x_offset, (bg_h - logo_h)//2 + y_offset)
     return (0, 0)
 
-@bot.on_message(filters.command("overlap"))
+@Client.on_message(filters.command("overlap"))
 async def overlap_handler(client, message):
     try:
         args = message.text.split()
@@ -57,7 +57,7 @@ async def overlap_handler(client, message):
     except Exception as e:
         await message.reply(f"❌ Error: {e}")
 
-@bot.on_message(filters.command("upload"))
+@Client.on_message(filters.command("upload"))
 async def upload_handler(client, message):
     try:
         args = message.text.split()
@@ -79,7 +79,7 @@ async def upload_handler(client, message):
     except Exception as e:
         await message.reply(f"❌ Error: {e}")
 
-@bot.on_message(filters.command("sticker"))
+@Client.on_message(filters.command("sticker"))
 async def sticker_handler(client, message):
     try:
         args = message.text.split()
