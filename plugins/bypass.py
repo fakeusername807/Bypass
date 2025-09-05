@@ -1,4 +1,4 @@
-from pyrogram import filters
+from pyrogram import Client, filters
 import requests, json, re
 
 API_URL = "https://freeseptemberapi.vercel.app/bypass"
@@ -14,7 +14,7 @@ def bypass_link(url: str) -> str:
     except Exception as e:
         return f"⚠️ {url} → Error: {str(e)}"
 
-# Handler (this will be auto-loaded by Pyrogram plugin system)
+# ✅ Correct decorator (now Client is imported)
 @Client.on_message(filters.command("bypass") & filters.private)
 async def bypass_handler(_, message):
     if len(message.command) < 2:
