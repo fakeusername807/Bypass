@@ -32,7 +32,8 @@ async def hubcloud_handler(client: Client, message: Message):
             async with session.get(WORKER_URL, params=params, timeout=90) as resp:
                 data = await resp.json()
 
-        files = data.get("files", [])
+        # ✅ Worker returns dict with movie, size, pixeldrain, fsl, zipdisk
+        files = [data] if isinstance(data, dict) else data.get("files", [])
 
         if not files:
             await wait_msg.edit_text("❌ No links found in response.")
@@ -41,7 +42,7 @@ async def hubcloud_handler(client: Client, message: Message):
         text = "✅ **HubCloud Extracted Links:**\n\n"
 
         for f in files:
-            movie_name = f.get("name", "Unknown File")
+            movie_name = f.get("movie", "Unknown File")
             movie_size = f.get("size", "Unknown Size")
             text += f"🎬 {movie_name}\n💾 {movie_size}\n\n"
 
@@ -49,9 +50,8 @@ async def hubcloud_handler(client: Client, message: Message):
                 text += f"🟢 Pixeldrain\n🔗 [Download Link]({f['pixeldrain']})\n\n"
             if f.get("fsl"):
                 text += f"🔵 FSL\n🔗 [Download Link]({f['fsl']})\n\n"
-            # ✅ Added 10GBs support
-            if f.get("10gbs"):
-                text += f"🟣 10GBs\n🔗 [Download Link]({f['10gbs']})\n\n"
+            if f.get("zipdisk"):
+                text += f"🟠 ZipDisk\n🔗 [Download Link]({f['zipdisk']})\n\n"
 
         await wait_msg.edit_text(text, disable_web_page_preview=True)
 
