@@ -8,7 +8,6 @@ WORKER_URL = "https://gdflix.botzs.workers.dev/?url="
 @Client.on_message(filters.command(["gd", "gdflix"]))
 async def gd_scraper(_, message: Message):
     # ------------------ Authorization Check ------------------
-    # Replace with your official group IDs (comma-separated)
     OFFICIAL_GROUPS = ["-1002311378229"]
 
     if str(message.chat.id) not in OFFICIAL_GROUPS:
@@ -46,6 +45,17 @@ async def gd_scraper(_, message: Message):
                 size = data.get("size", "Unknown Size")
                 links_data = data.get("links", {})
 
+                # Handle gofile (could be a list or string)
+                gofile_links = links_data.get("gofile", [])
+                if isinstance(gofile_links, str):
+                    gofile_text = f"[Click Here]({gofile_links})"
+                elif isinstance(gofile_links, list) and gofile_links:
+                    gofile_text = "\n".join(
+                        f"[Mirror {i+1}]({u})" for i, u in enumerate(gofile_links)
+                    )
+                else:
+                    gofile_text = "Not Found"
+
                 final_output += f"""
 📁 𝚃𝚒𝚝𝚕𝚎 {idx}
 {title}
@@ -54,8 +64,10 @@ async def gd_scraper(_, message: Message):
 ⚡ INSTANT DL : [Click Here]({links_data.get('instantdl','')})
 ☁️ CLOUD DOWNLOAD : [Click Here]({links_data.get('clouddl','')})
 📩 TELEGRAM FILE : [Click Here]({links_data.get('telegram','')})
-🗂 GOFILE : [Click Here]({links_data.get('gofile','')})
+🗂 GOFILE : {gofile_text}
 📥 PIXELDRAIN : [Click Here]({links_data.get('pixeldrain','')})
+🤖 DRIVEBOT : [Click Here]({links_data.get('drivebot','')})
+⚡ INSTANTBOT : [Click Here]({links_data.get('instantbot','')})
 
 ━━━━━━━━━━━━━━━━━━
 """
