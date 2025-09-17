@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
+import re
 
 # Your Cloudflare Worker API
 WORKER_URL = "https://hub.botzs.workers.dev/"
@@ -14,15 +15,24 @@ async def hubcloud_handler(client: Client, message: Message):
         return
     # ---------------------------------------------------------
 
-    if len(message.command) < 2:
+    hubcloud_urls = []
+
+    # Case 1: Direct command with links
+    if len(message.command) > 1:
+        raw_links = " ".join(message.command[1:])
+        hubcloud_urls.extend([u.strip() for u in raw_links.replace("\n", " ").replace(",", " ").split() if u.strip()])
+
+    # Case 2: Reply to a message containing links
+    if message.reply_to_message:
+        reply_text = message.reply_to_message.text or message.reply_to_message.caption or ""
+        found_links = re.findall(r"https?://hubcloud\.one/\S+", reply_text)
+        hubcloud_urls.extend(found_links)
+
+    if not hubcloud_urls:
         await message.reply_text(
-            "❌ Usage:\n`/hub <hubcloud_url>`\nor\n`/hubcloud <hubcloud_url1> <hubcloud_url2> ...`"
+            "❌ No HubCloud links found.\n\nUsage:\n`/hub <hubcloud_url>`\nor reply with `/hub` to a message containing HubCloud links."
         )
         return
-
-    # Collect all links after the command (space, comma, newline separated)
-    raw_links = " ".join(message.command[1:])
-    hubcloud_urls = [u.strip() for u in raw_links.replace("\n", " ").replace(",", " ").split() if u.strip()]
 
     wait_msg = await message.reply_text("🔍 Fetching links...")
 
