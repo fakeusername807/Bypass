@@ -1,4 +1,3 @@
-
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
@@ -70,8 +69,10 @@ async def hubcloud_handler(client: Client, message: Message):
                 for link in f["zipdisk"]:
                     text += f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'><b>Link</b></a>\n\n<b>━━━━━━━✦✗✦━━━━━━━\n</b>"
 
-        final_output += "\n<b>Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>"
-        await message.reply_text(final_output, disable_web_page_preview=True)
+            if message.from_user:
+                    text += f"<b>Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>\n\n"
+
+        await wait_msg.edit_text(text, disable_web_page_preview=True)
 
     except Exception as e:
         await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
