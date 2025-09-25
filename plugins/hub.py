@@ -49,7 +49,7 @@ async def hubcloud_handler(client: Client, message: Message):
     "-1002998120105",  # Group 3
     ]
     if str(message.chat.id) not in OFFICIAL_GROUPS:
-        await message.reply("❌ This command only works in our group.\nContact @MrSagar_RoBot For Group Link")
+        await message.reply("❌ This command only works in group.\nContact @MrSagar_RoBot For Group Link")
         return
     # ---------------------------------------------------------
 
