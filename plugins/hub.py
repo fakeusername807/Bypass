@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 import aiohttp
 import re
 
@@ -67,17 +67,23 @@ async def hubcloud_handler(client: Client, message: Message):
                     text += f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'><b>Link</b></a>\n┃\n"
             if f.get("zipdisk"):
                 for link in f["zipdisk"]:
-                    text += f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'><b>Link</b></a>\n\n<b>━━━━━━━✦✗✦━━━━━━━\n</b>"
+                    text += f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'><b>Link</b></a>\n\n<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n"
 
-            if message.from_user:
-                    text += f"<b>Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>\n\n"
+        # ✅ Requested By (only once, after loop)
+        if message.from_user:
+            text += f"<b>Requested By :-</b> {message.from_user.mention}\n<b>(#ID_{message.from_user.id})</b>\n\n"
 
-        await wait_msg.edit_text(text, disable_web_page_preview=True)
-        update_button = InlineKeyboardMarkup(
-    [
-        [InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]
-    ]
+        # ✅ Add button
+        await wait_msg.edit_text(
+            text,
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]
+                ]
+            )
         )
+
 
     except Exception as e:
         await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
