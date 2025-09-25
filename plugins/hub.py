@@ -57,18 +57,25 @@ async def hubcloud_handler(client: Client, message: Message):
         for f in results:
             movie_name = f.get("movie", "Unknown File")
             movie_size = f.get("size", "Unknown Size")
-            text += f"🎬 {movie_name}\n💾 {movie_size}\n\n"
+            text += f"┎ 📚 <b>Title :-</b> {movie_name}\n"
+            text += f"┃\n┠ 💾 <b>Size :-</b> {movie_size}\n┃\n"
 
-            if f.get("pixeldrain"):
-                for link in f["pixeldrain"]:
-                    text += f"🟢 Pixeldrain\n🔗 [Download Link]({link})\n\n"
-            if f.get("fsl"):
-                for link in f["fsl"]:
-                    text += f"🔵 FSL\n🔗 [Download Link]({link})\n\n"
-            if f.get("zipdisk"):
-                for link in f["zipdisk"]:
-                    text += f"🟣 ZipDisk\n🔗 [Download Link]({link})\n\n"
+            if data.get("pixeldrain"):
+                for link in data["pixeldrain"]:
+                    text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n┃\n"
 
+            if data.get("fsl"):
+                for link in data["fsl"]:
+                    text += f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'>Link</a>\n┃\n"
+
+            if data.get("zipdisk"):
+                for link in data["zipdisk"]:
+                    text += f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'>Link</a>\n"
+
+            text += "\n━━━━━━━✦✗✦━━━━━━━\n\n"
+            if message.from_user:
+                text += f"Requested By :- {message.from_user.mention} (#ID_{message.from_user.id})\n\n"
+                
         await wait_msg.edit_text(text, disable_web_page_preview=True)
 
     except Exception as e:
