@@ -11,7 +11,7 @@ def is_authorized(user_id: int) -> bool:
     return str(user_id) in AuthU.split(",")
 
 # Command to add a user or chat ID to AuthU
-@Client.on_message(filters.command("addauth"))
+@Client.on_message(filters.command("a"))
 async def add_auth(client, message: Message):
     global AuthU
     args = message.text.split(" ", 1)
@@ -21,7 +21,7 @@ async def add_auth(client, message: Message):
         return
 
     if len(args) < 2:
-        await message.reply("⚠️ Usage: `/addauth user_or_chat_id`")
+        await message.reply("⚠️ Usage: `/a user_or_chat_id`")
         return
 
     new_id = args[1].strip()
@@ -36,7 +36,7 @@ async def add_auth(client, message: Message):
         await message.reply(f"✅ ID `{new_id}` has been added to the authorized list.")
 
 # Command to remove a user or chat ID from AuthU
-@Client.on_message(filters.command("removeauth"))
+@Client.on_message(filters.command("ua"))
 async def remove_auth(client, message: Message):
     global AuthU
     args = message.text.split(" ", 1)
@@ -46,7 +46,7 @@ async def remove_auth(client, message: Message):
         return
 
     if len(args) < 2:
-        await message.reply("⚠️ Usage: `/removeauth user_or_chat_id`")
+        await message.reply("⚠️ Usage: `/ua user_or_chat_id`")
         return
 
     remove_id = args[1].strip()
