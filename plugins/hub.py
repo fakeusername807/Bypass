@@ -58,17 +58,17 @@ async def hubcloud_handler(client: Client, message: Message):
         for f in results:
             movie_name = f.get("movie", "Unknown File")
             movie_size = f.get("size", "Unknown Size")
-            text += f"┎ 📚 <b>Title :-</b> {movie_name}\n┠ 💾 <b>Size :-</b> {movie_size}\n\n"
+            text += f"┎ 📚 <b>Title :-</b> {movie_name}\n\n┠ 💾 <b>Size :-</b> {movie_size}\n"
 
             if f.get("pixeldrain"):
                 for link in f["pixeldrain"]:
-                    text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n"
+                    text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'><b>Link</b></a>\n\n"
             if f.get("fsl"):
                 for link in f["fsl"]:
-                    text += f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'>Link</a>\n"
+                    text += f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'><b>Link</b></a>\n\n"
             if f.get("zipdisk"):
                 for link in f["zipdisk"]:
-                    text += f"┠ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'>Link</a>\n\n━━━━━━━✦✗✦━━━━━━━\n"
+                    text += f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'><b>Link</b></a>\n\n<b>━━━━━━━✦✗✦━━━━━━━\n</b>"
 
         await wait_msg.edit_text(text, disable_web_page_preview=True)
 
