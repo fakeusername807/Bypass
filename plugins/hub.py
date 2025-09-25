@@ -1,3 +1,4 @@
+
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
@@ -55,37 +56,20 @@ async def hubcloud_handler(client: Client, message: Message):
         text = "✅ **HubCloud Extracted Links:**\n\n"
 
         for f in results:
-            if not isinstance(f, dict):
-                continue
+            movie_name = f.get("movie", "Unknown File")
+            movie_size = f.get("size", "Unknown Size")
+            text += f"┎ 📚 <b>Title :-</b> {movie_name}\n┠ 💾 <b>Size :-</b> {movie_size}\n\n"
 
-            movie_name = f.get("movie") or f.get("title") or "Unknown File"
-            movie_size = f.get("size") or "Unknown Size"
+            if f.get("pixeldrain"):
+                for link in f["pixeldrain"]:
+                    text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n"
+            if f.get("fsl"):
+                for link in f["fsl"]:
+                    text += f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'>Link</a>\n"
+            if f.get("zipdisk"):
+                for link in f["zipdisk"]:
+                    text += f"┠ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'>Link</a>\n\n━━━━━━━✦✗✦━━━━━━━\n"
 
-            # Box-style formatting
-            out_text += f"┎ 📚 <b>Title :-</b> {html.escape(movie_name)}\n"
-            out_text += f"┃\n"
-            out_text += f"┠ 💾 <b>Size :-</b> {html.escape(movie_size)}\n"
-            out_text += f"┃\n"
-
-            # Add server links
-            for key, label in [
-                ("pixeldrain", "Pixeldrain"),
-                ("fsl", "FSL Server"),
-                ("zipdisk", "ZipDisk Server"),
-                ("10gbps", "10Gbps Server"),
-            ]:
-                links = f.get(key) or []
-                if isinstance(links, str):
-                    links = [links]
-                for link in links:
-                    out_text += f"┠ 🔗 <b>{label} :-</b> <a href='{html.escape(link)}'>Link</a>\n"
-                    out_text += f"┃\n"
-
-            out_text = out_text.rstrip("┃\n") + "\n\n━━━━━━━✦✗✦━━━━━━━\n\n"
-
-        if message.from_user:
-            out_text += f"Requested By :- {message.from_user.mention} (#ID_{message.from_user.id})"
-                
         await wait_msg.edit_text(text, disable_web_page_preview=True)
 
     except Exception as e:
