@@ -60,15 +60,15 @@ async def hubcloud_handler(client: Client, message: Message):
             text += f"┎ 📚 <b>Title :-</b> {movie_name}\n"
             text += f"┃\n┠ 💾 <b>Size :-</b> {movie_size}\n┃\n"
 
-            if data.get("pixeldrain"):
+            if f.get("pixeldrain"):
                 for link in data["pixeldrain"]:
                     text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n┃\n"
 
-            if data.get("fsl"):
+            if f.get("fsl"):
                 for link in data["fsl"]:
                     text += f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'>Link</a>\n┃\n"
 
-            if data.get("zipdisk"):
+            if f.get("zipdisk"):
                 for link in data["zipdisk"]:
                     text += f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'>Link</a>\n"
 
