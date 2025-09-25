@@ -57,22 +57,32 @@ async def gd_scraper(_, message: Message):
                     gofile_text = "Not Found"
 
                 final_output += f"""
-📁 𝚃𝚒𝚝𝚕𝚎 {idx}
-{title}
-📦 𝚂𝚒𝚣𝚎 :- {size}
+┎ 📚 <b>Title :-</b> {idx}
+`{title}`
 
-⚡ INSTANT DL : [Click Here]({links_data.get('instantdl','')})
-☁️ CLOUD DOWNLOAD : [Click Here]({links_data.get('clouddl','')})
-📩 TELEGRAM FILE : [Click Here]({links_data.get('telegram','')})
-🗂 GOFILE : {gofile_text}
-📥 PIXELDRAIN : [Click Here]({links_data.get('pixeldrain','')})
-🤖 DRIVEBOT : [Click Here]({links_data.get('drivebot','')})
-⚡ INSTANTBOT : [Click Here]({links_data.get('instantbot','')})
+┠ 💾 <b>Size :- `{size}`
+┃
+┠  ⚡ INSTANT DL : [Click Here]({links_data.get('instantdl','')})
+┃
+┠  ☁️ CLOUD DOWNLOAD : [Click Here]({links_data.get('clouddl','')})
+┃
+┠  📩 TELEGRAM FILE : [Click Here]({links_data.get('telegram','')})
+┃
+┠  🗂 GOFILE : {gofile_text}
+┃
+┠  📥 PIXELDRAIN : [Click Here]({links_data.get('pixeldrain','')})
+┃
+┠  🤖 DRIVEBOT : [Click Here]({links_data.get('drivebot','')})
+┃
+┖  ⚡ INSTANTBOT : [Click Here]({links_data.get('instantbot','')})
 
-━━━━━━━━━━━━━━━━━━
+<b>━━━━━━━✦✗✦━━━━━━━</b>
+
+<b>Requested By :-</b> <b>{message.from_user.mention}</b>
+<b>(#ID_{message.from_user.id})</b>
 """
 
-        final_output += "\n⚡ Powered By @AddaFiles 🚀"
+        final_output += "\n⚡ Powered By @MrSagarBots 🚀"
         await message.reply_text(final_output, disable_web_page_preview=True)
 
     except Exception as e:
