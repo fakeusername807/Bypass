@@ -105,7 +105,7 @@ async def hubcloud_handler(client: Client, message: Message):
         # ✅ Requested By (only once, after loop)
         if message.from_user:
             text += (
-                f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n"
+                f"<b>🙋 Requested By :-</b> <b>{message.from_user.mention}</b>\n"
                 f"<b>(#ID_{message.from_user.id})</b>\n\n"
             )
 
