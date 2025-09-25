@@ -26,7 +26,7 @@ async def gd_scraper(_, message: Message):
     if len(links) > 5:
         return await message.reply_text("⚠️ You can only send up to 5 links at once!")
 
-    final_output = ""
+    final_output = "✅ **GDFlix Extracted Links:**\n\n"
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -57,37 +57,49 @@ async def gd_scraper(_, message: Message):
                     gofile_text = "Not Found"
 
                 final_output += f"""
-┎ 📚 <b>Title :-</b> {idx}
+┎ 📚 <b>Title {idx} :-</b>
 `{title}`
 
-┠ <b> 💾 <b>Size :-</b> `{size}`
+┠ 💾 <b>Size :-</b> `{size}`
 ┃
-┠  <b>⚡ INSTANT DL :-</b> [Click Here]({links_data.get('instantdl','')})
+┠ ⚡ <b>INSTANT DL :-</b> [Click Here]({links_data.get('instantdl','')})
 ┃
-┠  <b>☁️ CLOUD DOWNLOAD :-</b> [Click Here]({links_data.get('clouddl','')})
+┠ ☁️ <b>CLOUD DOWNLOAD :-</b> [Click Here]({links_data.get('clouddl','')})
 ┃
-┠  <b>📩 TELEGRAM FILE :-</b> [Click Here]({links_data.get('telegram','')})
+┠ 📩 <b>TELEGRAM FILE :-</b> [Click Here]({links_data.get('telegram','')})
 ┃
-┠  <b>🗂 GOFILE :-</b> {gofile_text}
+┠ 🗂 <b>GOFILE :-</b> {gofile_text}
 ┃
-┠  <b>📥 PIXELDRAIN :-</b> [Click Here]({links_data.get('pixeldrain','')})
+┠ 📥 <b>PIXELDRAIN :-</b> [Click Here]({links_data.get('pixeldrain','')})
 ┃
-┠  <b>🤖 DRIVEBOT :-</b> [Click Here]({links_data.get('drivebot','')})
+┠ 🤖 <b>DRIVEBOT :-</b> [Click Here]({links_data.get('drivebot','')})
 ┃
-┖  <b>⚡ INSTANTBOT :-</b> [Click Here]({links_data.get('instantbot','')})
+┖ ⚡ <b>INSTANTBOT :-</b> [Click Here]({links_data.get('instantbot','')})
 
-<b>━━━━━━━✦✗✦━━━━━━━</b>
-
-<b>Requested By :-</b> <b>{message.from_user.mention}</b>
-<b>(#ID_{message.from_user.id})</b>
+<b>━━━━━━━✦✗✦━━━━━━━</b>\n
 """
 
-        final_output += "\n<b>Powerd By :-</b> <b>@MrSagarBots</b>"
-        await message.reply_text(final_output, disable_web_page_preview=True)
+        # ✅ Requested By (only once, after all links)
+        if message.from_user:
+            final_output += (
+                "<b>━━━━━━━━━━━━━━━</b>\n"
+                f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n"
+                f"<b>(#ID_{message.from_user.id})</b>\n\n"
+            )
+
+        final_output += "<b>Powered By :-</b> <b>@MrSagarBots</b>"
+
+        # ✅ Add button
         update_button = InlineKeyboardMarkup(
-    [
-        [InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]
-    ]
+            [
+                [InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]
+            ]
+        )
+
+        await message.reply_text(
+            final_output,
+            disable_web_page_preview=True,
+            reply_markup=update_button
         )
 
     except Exception as e:
