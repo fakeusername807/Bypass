@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 import aiohttp
 
 WORKER_URL = "https://gdflix.botzs.workers.dev/?url="
@@ -84,6 +84,11 @@ async def gd_scraper(_, message: Message):
 
         final_output += "\n<b>Powerd By :-</b> <b>@MrSagarBots</b>"
         await message.reply_text(final_output, disable_web_page_preview=True)
+        update_button = InlineKeyboardMarkup(
+    [
+        [InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]
+    ]
+        )
 
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`")
