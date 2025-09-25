@@ -26,7 +26,7 @@ async def gd_scraper(_, message: Message):
     if len(links) > 5:
         return await message.reply_text("⚠️ You can only send up to 5 links at once!")
 
-    final_output = "✅ **GDFlix Extracted Links:**\n\n"
+    final_output = "✅ **GDFlix Extracted Links:**\n"
 
     try:
         async with aiohttp.ClientSession() as session:
