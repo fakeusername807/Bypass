@@ -73,6 +73,11 @@ async def hubcloud_handler(client: Client, message: Message):
                     text += f"<b>Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>\n\n"
 
         await wait_msg.edit_text(text, disable_web_page_preview=True)
+        update_button = InlineKeyboardMarkup(
+    [
+        [InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]
+    ]
+        )
 
     except Exception as e:
         await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
