@@ -58,7 +58,7 @@ async def hubcloud_handler(client: Client, message: Message):
         for f in results:
             movie_name = f.get("movie", "Unknown File")
             movie_size = f.get("size", "Unknown Size")
-            text += f"┎ 📚 <b>Title :-</b> {movie_name}\n\n┠ 💾 <b>Size :-</b> {movie_size}\n┃\n"
+            text += f"┎ 📚 <b>Title :-</b> `{movie_name}`\n\n┠ 💾 <b>Size :-</b> `{movie_size}`\n┃\n"
 
             if f.get("pixeldrain"):
                 for link in f["pixeldrain"]:
