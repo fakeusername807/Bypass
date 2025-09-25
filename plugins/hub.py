@@ -43,9 +43,9 @@ def format_size(size_str: str) -> str:
 @Client.on_message(filters.command(["hub", "hubcloud"]))
 async def hubcloud_handler(client: Client, message: Message):
     # ------------------ Authorization Check ------------------
-    OFFICIAL_GROUPS = ["-1002645306586"]  # replace with your group IDs
+    OFFICIAL_GROUPS = ["-1002645306586 -4806226644 -1002998120105"]  # replace with your group IDs
     if str(message.chat.id) not in OFFICIAL_GROUPS:
-        await message.reply("❌ This command only works in our official group.")
+        await message.reply("❌ This command only works in our group.\nContact @MrSagar_RoBot For Group Link")
         return
     # ---------------------------------------------------------
 
