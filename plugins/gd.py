@@ -60,29 +60,26 @@ async def gd_scraper(_, message: Message):
 ┎ 📚 <b>Title :-</b> {idx}
 `{title}`
 
-┠ 💾 <b>Size :- `{size}`
+┠ <b> 💾 <b>Size :-</b> `{size}`
 ┃
-┠  ⚡ INSTANT DL : [Click Here]({links_data.get('instantdl','')})
+┠  <b>⚡ INSTANT DL :-</b> <b>[Click Here]</b>({links_data.get('instantdl','')})
 ┃
-┠  ☁️ CLOUD DOWNLOAD : [Click Here]({links_data.get('clouddl','')})
+┠  <b>☁️ CLOUD DOWNLOAD :-</b> <b>[Click Here]</b>({links_data.get('clouddl','')})
 ┃
-┠  📩 TELEGRAM FILE : [Click Here]({links_data.get('telegram','')})
+┠  <b>📩 TELEGRAM FILE :-</b> <b>[Click Here]</b>({links_data.get('telegram','')})
 ┃
-┠  🗂 GOFILE : {gofile_text}
+┠  <b>🗂 GOFILE :-</b> <b>{gofile_text}</b>
 ┃
-┠  📥 PIXELDRAIN : [Click Here]({links_data.get('pixeldrain','')})
+┠  <b>📥 PIXELDRAIN :-</b> <b>[Click Here]</b>({links_data.get('pixeldrain','')})
 ┃
-┠  🤖 DRIVEBOT : [Click Here]({links_data.get('drivebot','')})
+┠  <b>🤖 DRIVEBOT :-</b> <b>[Click Here]</b>({links_data.get('drivebot','')})
 ┃
-┖  ⚡ INSTANTBOT : [Click Here]({links_data.get('instantbot','')})
+┖  <b>⚡ INSTANTBOT :-</b> <b>[Click Here]</b>({links_data.get('instantbot','')})
 
 <b>━━━━━━━✦✗✦━━━━━━━</b>
-
-<b>Requested By :-</b> <b>{message.from_user.mention}</b>
-<b>(#ID_{message.from_user.id})</b>
 """
 
-        final_output += "\n⚡ Powered By @MrSagarBots 🚀"
+        final_output += "\n<b>Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>"
         await message.reply_text(final_output, disable_web_page_preview=True)
 
     except Exception as e:
