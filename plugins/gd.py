@@ -77,6 +77,9 @@ async def gd_scraper(_, message: Message):
 ┖  <b>⚡ INSTANTBOT :-</b> [Click Here]({links_data.get('instantbot','')})
 
 <b>━━━━━━━✦✗✦━━━━━━━</b>
+
+<b>Requested By :-</b> <b>{message.from_user.mention}</b>
+<b>(#ID_{message.from_user.id})</b>
 """
 
         final_output += "\n<b>Powerd By :-</b> <b>@MrSagarBots</b>"
