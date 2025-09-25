@@ -8,10 +8,14 @@ WORKER_URL = "https://gdflix.botzs.workers.dev/?url="
 @Client.on_message(filters.command(["gd", "gdflix"]))
 async def gd_scraper(_, message: Message):
     # ------------------ Authorization Check ------------------
-    OFFICIAL_GROUPS = ["-1002645306586 -4806226644 -1002998120105"]
+    OFFICIAL_GROUPS = [
+    "-1002645306586",  # Group 1
+    "-4806226644",  # Group 2
+    "-1002998120105",  # Group 3
+    ]
 
     if str(message.chat.id) not in OFFICIAL_GROUPS:
-        await message.reply("❌ This command only works in our group.\nContact @MrSagar_RoBot For Group Link")
+        await message.reply("❌ This command only works in group.\nContact @MrSagar_RoBot For Group Link")
         return
     # ---------------------------------------------------------
 
