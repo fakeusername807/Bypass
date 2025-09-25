@@ -97,7 +97,10 @@ async def gd_scraper(_, message: Message):
             ]
         )
 
-        await message.reply_text(
+        wait_msg = await message.reply_text("🔍 Fetching links...")
+
+        # After building final_output
+        await wait_msg.edit_text(
             final_output,
             disable_web_page_preview=True,
             reply_markup=update_button
