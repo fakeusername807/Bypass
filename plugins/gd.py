@@ -82,12 +82,9 @@ async def gd_scraper(_, message: Message):
         # ✅ Requested By (only once, after all links)
         if message.from_user:
             final_output += (
-                "<b>━━━━━━━━━━━━━━━</b>\n"
-                f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n"
+                f"<b>🙋 Requested By :-</b> <b>{message.from_user.mention}</b>\n"
                 f"<b>(#ID_{message.from_user.id})</b>\n\n"
             )
-
-        final_output += "<b>Powered By :-</b> <b>@MrSagarBots</b>"
 
         # ✅ Add button
         update_button = InlineKeyboardMarkup(
