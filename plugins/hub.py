@@ -70,6 +70,9 @@ async def hubcloud_handler(client: Client, message: Message):
                 for link in f["zipdisk"]:
                     text += f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'><b>Link</b></a>\n\n<b>━━━━━━━✦✗✦━━━━━━━\n</b>"
 
+            if message.from_user:
+                    text += f"<b>Requested By :-</b> <b>{message.from_user.mention}</b>\n(#ID_{message.from_user.id})\n\n"
+
         await wait_msg.edit_text(text, disable_web_page_preview=True)
 
     except Exception as e:
