@@ -74,7 +74,7 @@ async def gd_scraper(client: Client, message: Message):
 """
 
         if message.from_user:
-            final_output += f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n<b>(#ID_{message.from_user.id})</b>\n\n"
+            final_output += f"<b>🙋 Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>\n\n"
 
         update_button = InlineKeyboardMarkup(
             [[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]]
