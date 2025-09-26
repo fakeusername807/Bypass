@@ -5,6 +5,14 @@ import aiohttp
 API_URL = "https://hgbots.vercel.app/bypaas/extraflix.php?url="
 DUMP_CHANNEL_ID = "-1002673922646"  # your dump channel ID
 
+def to_list(x):
+    """Ensure the API field is always a list"""
+    if not x:
+        return []
+    if isinstance(x, list):
+        return x
+    return [x]
+
 @Client.on_message(filters.command(["extraflix"]))
 async def extraflix_scraper(client: Client, message: Message):
     # ------------------ Authorization Check ------------------
@@ -14,7 +22,9 @@ async def extraflix_scraper(client: Client, message: Message):
         "-1002998120105",
     ]
     if str(message.chat.id) not in OFFICIAL_GROUPS:
-        await message.reply("❌ This command only works in group.\nContact @MrSagar_RoBot For Group Link")
+        await message.reply(
+            "❌ This command only works in group.\nContact @MrSagar_RoBot For Group Link"
+        )
         return
     # ---------------------------------------------------------
 
@@ -47,21 +57,17 @@ async def extraflix_scraper(client: Client, message: Message):
             text += f"┎ 📚 <b>Title {idx} :-</b>\n`{title}`\n\n"
             text += f"┠ 💾 <b>Size :-</b> `{size}`\n┃\n"
 
-            if f.get("gdtot"):
-                for link in f["gdtot"]:
-                    text += f"┠ 🔗 <b>GDTOT :-</b> <a href='{link}'>Link</a>\n┃\n"
+            for link in to_list(f.get("gdtot")):
+                text += f"┠ 🔗 <b>GDTOT :-</b> <a href='{link}'>Link</a>\n┃\n"
 
-            if f.get("vikings"):
-                for link in f["vikings"]:
-                    text += f"┠ 🔗 <b>Vikings :-</b> <a href='{link}'>Link</a>\n┃\n"
+            for link in to_list(f.get("vikings")):
+                text += f"┠ 🔗 <b>Vikings :-</b> <a href='{link}'>Link</a>\n┃\n"
 
-            if f.get("pixeldrain"):
-                for link in f["pixeldrain"]:
-                    text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n┃\n"
+            for link in to_list(f.get("pixeldrain")):
+                text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n┃\n"
 
-            if f.get("others"):
-                for link in f["others"]:
-                    text += f"┖ 🔗 <b>Mirror :-</b> <a href='{link}'>Link</a>\n\n"
+            for link in to_list(f.get("others")):
+                text += f"┖ 🔗 <b>Mirror :-</b> <a href='{link}'>Link</a>\n\n"
 
             text += "<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n"
 
