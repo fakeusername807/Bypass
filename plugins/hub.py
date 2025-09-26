@@ -82,7 +82,7 @@ async def hubcloud_handler(client: Client, message: Message):
                 text += "".join(f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'><b>Link</b></a>\n\n<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n" for link in f["zipdisk"])
 
         if message.from_user:
-            text += f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n<b>(#ID_{message.from_user.id})</b>\n\n"
+            text += f"<b>🙋 Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>\n\n"
 
         update_button = InlineKeyboardMarkup(
             [[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]]
