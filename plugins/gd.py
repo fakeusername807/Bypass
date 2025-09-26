@@ -3,34 +3,28 @@ from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 import aiohttp
 
 WORKER_URL = "https://gdflix.botzs.workers.dev/?url="
+DUMP_CHANNEL_ID = "-1002673922646"  # 🔹 replace with your dump channel ID
 
-# ===== GD / GDFLIX COMMAND =====
 @Client.on_message(filters.command(["gd", "gdflix"]))
-async def gd_scraper(_, message: Message):
-    # ------------------ Authorization Check ------------------
+async def gd_scraper(client: Client, message: Message):
     OFFICIAL_GROUPS = [
-    "-1002645306586",  # Group 1
-    "-4806226644",  # Group 2
-    "-1002998120105",  # Group 3
+        "-1002645306586",
+        "-4806226644",
+        "-1002998120105",
     ]
-
     if str(message.chat.id) not in OFFICIAL_GROUPS:
         await message.reply("❌ This command only works in group.\nContact @MrSagar_RoBot For Group Link")
         return
-    # ---------------------------------------------------------
 
-    # Validate links
     if len(message.command) == 1:
-        return await message.reply_text(
-            "⚠️ Usage: `/gd <gdlink1> <gdlink2> ... (upto 5)`",
-            disable_web_page_preview=True
-        )
+        return await message.reply_text("⚠️ Usage: `/gd <gdlink1> <gdlink2> ... (upto 5)`", disable_web_page_preview=True)
 
-    links = message.command[1:]  # all links after command
+    links = message.command[1:]
     if len(links) > 5:
         return await message.reply_text("⚠️ You can only send up to 5 links at once!")
 
-    final_output = "✅ **GDFlix Extracted Links:**\n"
+    wait_msg = await message.reply_text("🔍")
+    final_output = "✅ **GDFlix Extracted Links:**\n\n"
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -49,19 +43,15 @@ async def gd_scraper(_, message: Message):
                 size = data.get("size", "Unknown Size")
                 links_data = data.get("links", {})
 
-                # Handle gofile (could be a list or string)
                 gofile_links = links_data.get("gofile", [])
                 if isinstance(gofile_links, str):
                     gofile_text = f"[Click Here]({gofile_links})"
                 elif isinstance(gofile_links, list) and gofile_links:
-                    gofile_text = "\n".join(
-                        f"[Mirror {i+1}]({u})" for i, u in enumerate(gofile_links)
-                    )
+                    gofile_text = "\n".join(f"[Mirror {i+1}]({u})" for i, u in enumerate(gofile_links))
                 else:
                     gofile_text = "Not Found"
 
-                final_output += f"""
-┎ 📚 <b>Title {idx} :-</b>
+                final_output += f"""┎ 📚 <b>Title {idx} :-</b>
 `{title}`
 
 ┠ 💾 <b>Size :-</b> `{size}`
@@ -83,28 +73,18 @@ async def gd_scraper(_, message: Message):
 <b>━━━━━━━✦✗✦━━━━━━━</b>\n
 """
 
-        # ✅ Requested By (only once, after all links)
         if message.from_user:
-            final_output += (
-                f"<b>🙋 Requested By :-</b> <b>{message.from_user.mention}</b>\n"
-                f"<b>(#ID_{message.from_user.id})</b>\n\n"
-            )
+            final_output += f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n<b>(#ID_{message.from_user.id})</b>\n\n"
 
-        # ✅ Add button
         update_button = InlineKeyboardMarkup(
-            [
-                [InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]
-            ]
+            [[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]]
         )
 
-        wait_msg = await message.reply_text("🔍 Fetching links...")
+        # Reply in chat
+        await wait_msg.edit_text(final_output, disable_web_page_preview=True, reply_markup=update_button)
 
-        # After building final_output
-        await wait_msg.edit_text(
-            final_output,
-            disable_web_page_preview=True,
-            reply_markup=update_button
-        )
+        # Send to dump channel
+        await client.send_message(DUMP_CHANNEL_ID, final_output, disable_web_page_preview=True, reply_markup=update_button)
 
     except Exception as e:
-        await message.reply_text(f"⚠️ Error: `{e}`")
+        await wait_msg.edit_text(f"⚠️ Error: `{e}`")
