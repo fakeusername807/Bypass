@@ -35,31 +35,30 @@ async def extraflix_scraper(client: Client, message: Message):
                     return
                 data = await resp.json()
 
-        text = ""
+        text = "✅ Extraflix Extracted Links:\n\n"
 
-        for f in data:
+        for idx, f in enumerate(data, start=1):
             movie_name = f.get("fileName", "Unknown File")
-            movie_size = f.get("size", "Unknown Size")
             links = f.get("links", {})
 
-            text += f"┎ 📚 <b>Title :-</b> `{movie_name}`\n\n"
-            text += f"┠ 💾 <b>Size :-</b> `{movie_size}`\n┃\n"
+            text += f"┎ 📚 Title :- `{movie_name}`\n\n"
 
-            # GDTOT
-            if links.get("gdtotLink"):
-                text += f"┠ 🔗 <b>GDTOT :-</b> <a href='{links['gdtotLink']}'><b>Link</b></a>\n┃\n"
-            # VidHide
-            if links.get("vidhideLink"):
-                text += f"┠ 🔗 <b>VidHide :-</b> <a href='{links['vidhideLink']}'><b>Link</b></a>\n┃\n"
-            # Pixeldrain
-            if links.get("pixeldrainLink"):
-                text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{links['pixeldrainLink']}'><b>Link</b></a>\n┃\n"
-            # Viking
-            if links.get("vikingLink"):
-                text += f"┠ 🔗 <b>Viking :-</b> <a href='{links['vikingLink']}'><b>Link</b></a>\n┃\n"
-            # Photo / Cover
-            if links.get("photoLink"):
-                text += f"┖ 🔗 <b>Photo :-</b> <a href='{links['photoLink']}'><b>Link</b></a>\n\n"
+            gdtot = links.get("gdtotLink")
+            vidhide = links.get("vidhideLink")
+            pixeldrain = links.get("pixeldrainLink")
+            viking = links.get("vikingLink")
+            photo = links.get("photoLink")
+
+            if gdtot:
+                text += f"┠ 🔗 <b>GDToT</b> :- <a href='{gdtot}'><b>Link</b></a>\n┃\n"
+            if vidhide:
+                text += f"┠ 🔗 <b>VidHide</b> :- <a href='{vidhide}'><b>Link</b></a>\n┃\n"
+            if pixeldrain:
+                text += f"┠ 🔗 <b>PixelDrain</b> :- <a href='{pixeldrain}'><b>Link</b></a>\n┃\n"
+            if viking:
+                text += f"┠ 🔗 <b>Viking</b> :- <a href='{viking}'><b>Link</b></a>\n┃\n"
+            if photo:
+                text += f"┖ 🔗 <b>Photo</b> :- <a href='{photo}'><b>Link</b></a>\n\n"
 
             text += "<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n"
 
@@ -70,20 +69,20 @@ async def extraflix_scraper(client: Client, message: Message):
             [[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]]
         )
 
+        # Reply in chat
         await wait_msg.edit_text(
             text,
             disable_web_page_preview=True,
             reply_markup=update_button
         )
 
-        # Send to dump channel (plain text, same formatting)
+        # Send to dump channel
         await client.send_message(
             DUMP_CHANNEL_ID,
             text,
             disable_web_page_preview=True,
             reply_markup=update_button
         )
-
 
     except Exception as e:
         await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
