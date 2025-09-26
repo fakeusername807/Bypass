@@ -75,11 +75,11 @@ async def hubcloud_handler(client: Client, message: Message):
             movie_size = format_size(f.get("size", "Unknown Size"))
             text += f"┎ 📚 <b>Title :-</b> `{movie_name}`\n\n┠ 💾 <b>Size :-</b> `{movie_size}`\n┃\n"
             if f.get("pixeldrain"):
-                text += "".join(f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n┃\n" for link in f["pixeldrain"])
+                text += "".join(f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'><b>Link</b></a>\n┃\n" for link in f["pixeldrain"])
             if f.get("fsl"):
-                text += "".join(f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'>Link</a>\n┃\n" for link in f["fsl"])
+                text += "".join(f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'><b>Link</b></a>\n┃\n" for link in f["fsl"])
             if f.get("zipdisk"):
-                text += "".join(f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'>Link</a>\n\n<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n" for link in f["zipdisk"])
+                text += "".join(f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'><b>Link</b></a>\n\n<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n" for link in f["zipdisk"])
 
         if message.from_user:
             text += f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n<b>(#ID_{message.from_user.id})</b>\n\n"
