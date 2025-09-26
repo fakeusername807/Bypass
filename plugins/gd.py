@@ -56,19 +56,19 @@ async def gd_scraper(client: Client, message: Message):
 
 ┠ 💾 <b>Size :-</b> `{size}`
 ┃
-┠ ⚡ <b>INSTANT DL :-</b> [Click Here]({links_data.get('instantdl','')})
+┠ 🔗 <b>INSTANT DL :-</b> [Click Here]({links_data.get('instantdl','')})
 ┃
-┠ ☁️ <b>CLOUD DOWNLOAD :-</b> [Click Here]({links_data.get('clouddl','')})
+┠ 🔗 <b>CLOUD DOWNLOAD :-</b> [Click Here]({links_data.get('clouddl','')})
 ┃
-┠ 📩 <b>TELEGRAM FILE :-</b> [Click Here]({links_data.get('telegram','')})
+┠ 🔗 <b>TELEGRAM FILE :-</b> [Click Here]({links_data.get('telegram','')})
 ┃
-┠ 🗂 <b>GOFILE :-</b> {gofile_text}
+┠ 🔗 <b>GOFILE :-</b> {gofile_text}
 ┃
-┠ 📥 <b>PIXELDRAIN :-</b> [Click Here]({links_data.get('pixeldrain','')})
+┠ 🔗 <b>PIXELDRAIN :-</b> [Click Here]({links_data.get('pixeldrain','')})
 ┃
-┠ 🤖 <b>DRIVEBOT :-</b> [Click Here]({links_data.get('drivebot','')})
+┠ 🔗 <b>DRIVEBOT :-</b> [Click Here]({links_data.get('drivebot','')})
 ┃
-┖ ⚡ <b>INSTANTBOT :-</b> [Click Here]({links_data.get('instantbot','')})
+┖ 🔗 <b>INSTANTBOT :-</b> [Click Here]({links_data.get('instantbot','')})
 
 <b>━━━━━━━✦✗✦━━━━━━━</b>\n
 """
