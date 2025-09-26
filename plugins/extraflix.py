@@ -2,9 +2,8 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 import aiohttp
 
-# API URL template
 API_URL = "https://hgbots.vercel.app/bypaas/extraflix.php?url="
-DUMP_CHANNEL_ID = "-1002673922646"  # 🔹 your dump channel ID
+DUMP_CHANNEL_ID = "-1002673922646"  # your dump channel ID
 
 @Client.on_message(filters.command(["extraflix"]))
 async def extraflix_scraper(client: Client, message: Message):
@@ -19,7 +18,6 @@ async def extraflix_scraper(client: Client, message: Message):
         return
     # ---------------------------------------------------------
 
-    # Validate command
     if len(message.command) == 1:
         return await message.reply_text(
             "⚠️ Usage: `/extraflix <extraflix_url>`",
@@ -37,37 +35,37 @@ async def extraflix_scraper(client: Client, message: Message):
                     return
                 data = await resp.json()
 
-        # Start formatting
+        # Normalize response (dict or list)
+        results = [data] if isinstance(data, dict) else data
+
         text = "✅ **Extraflix Extracted Links:**\n\n"
 
-        title = data.get("title", "Unknown Title")
-        size = data.get("size", "Unknown Size")
+        for idx, f in enumerate(results, start=1):
+            title = f.get("title", "Unknown Title")
+            size = f.get("size", "Unknown Size")
 
-        text += f"┎ 📚 <b>Title :-</b>\n`{title}`\n\n"
-        text += f"┠ 💾 <b>Size :-</b> `{size}`\n┃\n"
+            text += f"┎ 📚 <b>Title {idx} :-</b>\n`{title}`\n\n"
+            text += f"┠ 💾 <b>Size :-</b> `{size}`\n┃\n"
 
-        # gdtot links
-        if data.get("gdtot"):
-            for link in data["gdtot"]:
-                text += f"┠ 🔗 <b>GDTOT :-</b> <a href='{link}'>Link</a>\n┃\n"
+            if f.get("gdtot"):
+                for link in f["gdtot"]:
+                    text += f"┠ 🔗 <b>GDTOT :-</b> <a href='{link}'>Link</a>\n┃\n"
 
-        # vikings links
-        if data.get("vikings"):
-            for link in data["vikings"]:
-                text += f"┠ 🔗 <b>Vikings :-</b> <a href='{link}'>Link</a>\n┃\n"
+            if f.get("vikings"):
+                for link in f["vikings"]:
+                    text += f"┠ 🔗 <b>Vikings :-</b> <a href='{link}'>Link</a>\n┃\n"
 
-        # pixeldrain links
-        if data.get("pixeldrain"):
-            for link in data["pixeldrain"]:
-                text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n┃\n"
+            if f.get("pixeldrain"):
+                for link in f["pixeldrain"]:
+                    text += f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n┃\n"
 
-        # other links
-        if data.get("others"):
-            for link in data["others"]:
-                text += f"┖ 🔗 <b>Mirror :-</b> <a href='{link}'>Link</a>\n\n"
+            if f.get("others"):
+                for link in f["others"]:
+                    text += f"┖ 🔗 <b>Mirror :-</b> <a href='{link}'>Link</a>\n\n"
 
-        text += "<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n"
+            text += "<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n"
 
+        # Requested By (once at bottom)
         if message.from_user:
             text += f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n<b>(#ID_{message.from_user.id})</b>\n\n"
 
@@ -82,7 +80,7 @@ async def extraflix_scraper(client: Client, message: Message):
             reply_markup=update_button
         )
 
-        # Send to dump channel with prefix
+        # Send to dump channel
         await client.send_message(
             DUMP_CHANNEL_ID,
             f"📦 [Extraflix]\n\n{text}",
