@@ -37,7 +37,11 @@ async def extraflix_scraper(client: Client, message: Message):
 
         text = "✅ Extraflix Extracted Links:\n\n"
 
-        for idx, f in enumerate(data, start=1):
+        update_button = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]]
+        )
+
+        for f in data:
             movie_name = f.get("fileName", "Unknown File")
             links = f.get("links", {})
 
@@ -47,7 +51,6 @@ async def extraflix_scraper(client: Client, message: Message):
             vidhide = links.get("vidhideLink")
             pixeldrain = links.get("pixeldrainLink")
             viking = links.get("vikingLink")
-            photo = links.get("photoLink")
 
             if gdtot:
                 text += f"┠ 🔗 <b>GDToT</b> :- <a href='{gdtot}'><b>Link</b></a>\n┃\n"
@@ -56,18 +59,12 @@ async def extraflix_scraper(client: Client, message: Message):
             if pixeldrain:
                 text += f"┠ 🔗 <b>PixelDrain</b> :- <a href='{pixeldrain}'><b>Link</b></a>\n┃\n"
             if viking:
-                text += f"┠ 🔗 <b>Viking</b> :- <a href='{viking}'><b>Link</b></a>\n┃\n"
-            if photo:
-                text += f"┖ 🔗 <b>Photo</b> :- <a href='{photo}'><b>Link</b></a>\n\n"
+                text += f"┖ 🔗 <b>Viking</b> :- <a href='{viking}'><b>Link</b></a>\n\n"
 
             text += "<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n"
 
         if message.from_user:
             text += f"<b>🙋 Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>\n\n"
-
-        update_button = InlineKeyboardMarkup(
-            [[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]]
-        )
 
         # Reply in chat
         await wait_msg.edit_text(
