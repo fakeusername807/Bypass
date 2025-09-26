@@ -5,13 +5,6 @@ import aiohttp
 API_URL = "https://hgbots.vercel.app/bypaas/extraflix.php?url="
 DUMP_CHANNEL_ID = "-1002673922646"  # your dump channel ID
 
-def to_list(x):
-    if not x:
-        return []
-    if isinstance(x, list):
-        return x
-    return [x]
-
 @Client.on_message(filters.command(["extraflix"]))
 async def extraflix_scraper(client: Client, message: Message):
     OFFICIAL_GROUPS = [
@@ -42,26 +35,27 @@ async def extraflix_scraper(client: Client, message: Message):
                     return
                 data = await resp.json()
 
-        results = [data] if isinstance(data, dict) else data
         text = ""
 
-        for f in results:
-            title = f.get("title", "Unknown Title")
-            text += f"{title}\n\n"
+        for file in data:
+            file_name = file.get("fileName", "Unknown File")
+            links = file.get("links", {})
 
-            # Direct downloadable links
-            for link in to_list(f.get("gdtot")):
-                text += f"🚀 gdtotLink :- {link}\n"
-            for link in to_list(f.get("vidhide")):
-                text += f"🚀 vidhideLink :- {link}\n"
-            for link in to_list(f.get("pixeldrain")):
-                text += f"🚀 pixeldrainLink :- {link}\n"
-            for link in to_list(f.get("vikings")):
-                text += f"🚀 vikingLink :- {link}\n"
-            for link in to_list(f.get("photo")):
-                text += f"🚀 photoLink :- {link}\n"
+            text += f"{file_name}\n\n"
 
-            text += "\n"
+            # Loop over possible links
+            if "gdtotLink" in links:
+                text += f"🚀 gdtotLink :- {links['gdtotLink']}\n"
+            if "vidhideLink" in links:
+                text += f"🚀 vidhideLink :- {links['vidhideLink']}\n"
+            if "pixeldrainLink" in links:
+                text += f"🚀 pixeldrainLink :- {links['pixeldrainLink']}\n"
+            if "vikingLink" in links:
+                text += f"🚀 vikingLink :- {links['vikingLink']}\n"
+            if "photoLink" in links:
+                text += f"🚀 photoLink :- {links['photoLink']}\n"
+
+            text += "\n"  # blank line between files
 
         if message.from_user:
             text += f"🙋 Requested By :- {message.from_user.mention}\n"
