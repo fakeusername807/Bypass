@@ -5,14 +5,11 @@ import aiohttp, re, asyncio
 WORKER_URL = "https://hub.botzs.workers.dev/"
 DUMP_CHANNEL_ID = "-1002673922646"
 
-async def progress_task(msg, stop_event):
-    i = 0
-    while not stop_event.is_set():
-        percent = (i % 11) * 10
-        bar = "■" * (percent // 10) + "□" * (10 - percent // 10)
-        await msg.edit_text(f"[{bar}] {percent}%")
+async def show_progress(msg):
+    for i in range(0, 101, 20):
+        bar = "■" * (i // 10) + "□" * (10 - i // 10)
+        await msg.edit_text(f"[{bar}] {i}%")
         await asyncio.sleep(0.5)
-        i += 1
 
 def format_size(size_str: str) -> str:
     if not size_str:
@@ -56,8 +53,7 @@ async def hubcloud_handler(client: Client, message: Message):
         return
 
     wait_msg = await message.reply_text("[□□□□□□□□□□] 0%")
-    stop_event = asyncio.Event()
-    task = asyncio.create_task(progress_task(wait_msg, stop_event))
+    await show_progress(wait_msg)  # run till 100%
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -67,8 +63,6 @@ async def hubcloud_handler(client: Client, message: Message):
 
         results = [data] if isinstance(data, dict) else data
         if not results:
-            stop_event.set()
-            await task
             await wait_msg.edit_text("❌ No links found in response.")
             return
 
@@ -89,12 +83,8 @@ async def hubcloud_handler(client: Client, message: Message):
 
         update_button = InlineKeyboardMarkup([[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]])
 
-        stop_event.set()
-        await task
         await wait_msg.edit_text(text, disable_web_page_preview=True, reply_markup=update_button)
         await client.send_message(DUMP_CHANNEL_ID, f"📦 [HubCloud]\n\n{text}", disable_web_page_preview=True, reply_markup=update_button)
 
     except Exception as e:
-        stop_event.set()
-        await task
         await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
