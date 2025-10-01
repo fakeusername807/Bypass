@@ -5,11 +5,12 @@ import aiohttp, re, asyncio
 WORKER_URL = "https://hub.botzs.workers.dev/"
 DUMP_CHANNEL_ID = "-1002673922646"
 
-async def show_progress(msg):
-    for i in range(0, 101, 20):
-        bar = "■" * (i // 10) + "□" * (10 - i // 10)
-        await msg.edit_text(f"[{bar}] {i}%")
-        await asyncio.sleep(0.5)
+async def dot_loader(msg):
+    steps = ["● ◌ ◌", "● ● ◌", "● ● ●"]
+    for _ in range(2):
+        for s in steps:
+            await msg.edit_text(s)
+            await asyncio.sleep(0.5)
 
 def format_size(size_str: str) -> str:
     if not size_str:
@@ -52,8 +53,8 @@ async def hubcloud_handler(client: Client, message: Message):
         await message.reply_text("❌ No HubCloud links found.\n\nUsage:\n`/hub <hubcloud_url>` or reply with `/hub`.")
         return
 
-    wait_msg = await message.reply_text("[□□□□□□□□□□] 0%")
-    await show_progress(wait_msg)  # run till 100%
+    wait_msg = await message.reply_text("● ◌ ◌")
+    await dot_loader(wait_msg)
 
     try:
         async with aiohttp.ClientSession() as session:
