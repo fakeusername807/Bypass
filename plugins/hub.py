@@ -52,7 +52,7 @@ async def hubcloud_handler(client: Client, message: Message):
         return
 
     wait_msg = await message.reply_text("[□□□□□□□□□□] 0%")
-    asyncio.create_task(show_progress(wait_msg))
+    await show_progress(wait_msg)
 
     try:
         async with aiohttp.ClientSession() as session:
