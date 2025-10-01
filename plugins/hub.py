@@ -1,17 +1,13 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-import aiohttp, re, asyncio
+import aiohttp
+import re
 
+# Your Cloudflare Worker API
 WORKER_URL = "https://hub.botzs.workers.dev/"
-DUMP_CHANNEL_ID = "-1002673922646"
+DUMP_CHANNEL_ID = "-1002673922646"  # 🔹 replace with your dump channel ID
 
-async def dot_loader(msg):
-    steps = ["● ◌ ◌", "● ● ◌", "● ● ●"]
-    for _ in range(2):
-        for s in steps:
-            await msg.edit_text(s)
-            await asyncio.sleep(0.5)
-
+# === Size Formatter Function ===
 def format_size(size_str: str) -> str:
     if not size_str:
         return "Unknown Size"
@@ -33,10 +29,14 @@ def format_size(size_str: str) -> str:
             return f"{int(value)} MB" if value.is_integer() else f"{value:.1f} MB"
     return size_str
 
-@Client.on_message(filters.command(["hub", "hubcloud", "H"]))
-async def hubcloud_handler(client: Client, message: Message):
-    OFFICIAL_GROUPS = ["-1002645306586", "-4806226644", "-1002998120105"]
 
+@Client.on_message(filters.command(["hub", "hubcloud"]))
+async def hubcloud_handler(client: Client, message: Message):
+    OFFICIAL_GROUPS = [
+        "-1002645306586",
+        "-4806226644",
+        "-1002998120105",
+    ]
     if str(message.chat.id) not in OFFICIAL_GROUPS:
         await message.reply("❌ This command only works in group.\nContact @MrSagar_RoBot For Group Link")
         return
@@ -44,17 +44,19 @@ async def hubcloud_handler(client: Client, message: Message):
     hubcloud_urls = []
     if len(message.command) > 1:
         raw_links = " ".join(message.command[1:])
-        hubcloud_urls.extend([u.strip() for u in raw_links.replace("\n"," ").replace(","," ").split() if u.strip()])
+        hubcloud_urls.extend([u.strip() for u in raw_links.replace("\n", " ").replace(",", " ").split() if u.strip()])
+
     if message.reply_to_message:
         reply_text = message.reply_to_message.text or message.reply_to_message.caption or ""
         hubcloud_urls.extend(re.findall(r"https?://hubcloud\.one/\S+", reply_text))
 
     if not hubcloud_urls:
-        await message.reply_text("❌ No HubCloud links found.\n\nUsage:\n`/hub <hubcloud_url>` or reply with `/hub`.")
+        await message.reply_text(
+            "❌ No HubCloud links found.\n\nUsage:\n`/hub <hubcloud_url>`\nor reply with `/hub` to a message containing HubCloud links."
+        )
         return
 
-    wait_msg = await message.reply_text("● ◌ ◌")
-    await dot_loader(wait_msg)
+    wait_msg = await message.reply_text("🔍")
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -73,19 +75,24 @@ async def hubcloud_handler(client: Client, message: Message):
             movie_size = format_size(f.get("size", "Unknown Size"))
             text += f"┎ 📚 <b>Title :-</b> `{movie_name}`\n\n┠ 💾 <b>Size :-</b> `{movie_size}`\n┃\n"
             if f.get("pixeldrain"):
-                text += "".join(f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'>Link</a>\n┃\n" for link in f["pixeldrain"])
+                text += "".join(f"┠ 🔗 <b>Pixeldrain :-</b> <a href='{link}'><b>Link</b></a>\n┃\n" for link in f["pixeldrain"])
             if f.get("fsl"):
-                text += "".join(f"┠ 🔗 <b>FSL :-</b> <a href='{link}'>Link</a>\n┃\n" for link in f["fsl"])
+                text += "".join(f"┠ 🔗 <b>FSL Server :-</b> <a href='{link}'><b>Link</b></a>\n┃\n" for link in f["fsl"])
             if f.get("zipdisk"):
-                text += "".join(f"┖ 🔗 <b>ZipDisk :-</b> <a href='{link}'>Link</a>\n\n<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n" for link in f["zipdisk"])
+                text += "".join(f"┖ 🔗 <b>ZipDisk Server :-</b> <a href='{link}'><b>Link</b></a>\n\n<b>━━━━━━━✦✗✦━━━━━━━</b>\n\n" for link in f["zipdisk"])
 
         if message.from_user:
-            text += f"<b>🙋 Requested By :-</b> {message.from_user.mention}\n<b>(#ID_{message.from_user.id})</b>\n\n"
+            text += f"<b>🙋 Requested By :-</b> <b>{message.from_user.mention}</b>\n<b>(#ID_{message.from_user.id})</b>\n\n"
 
-        update_button = InlineKeyboardMarkup([[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]])
+        update_button = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("📢 Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ", url="https://t.me/MrSagarBots")]]
+        )
 
+        # Reply in chat
         await wait_msg.edit_text(text, disable_web_page_preview=True, reply_markup=update_button)
-        await client.send_message(DUMP_CHANNEL_ID, f"📦 [HubCloud]\n\n{text}", disable_web_page_preview=True, reply_markup=update_button)
+
+        # Send to dump channel
+        await client.send_message(DUMP_CHANNEL_ID, text, disable_web_page_preview=True, reply_markup=update_button)
 
     except Exception as e:
         await wait_msg.edit_text(f"⚠️ Error:\n`{e}`")
